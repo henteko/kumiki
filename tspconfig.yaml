@@ -1,0 +1,8 @@
+emit:
+  - "typespec-zod"
+
+options:
+  "typespec-zod":
+    emitAllModels: true
+
+output-dir: "{project-root}/src/schemas/generated"

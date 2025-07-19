@@ -9,12 +9,13 @@
     "kumiki": "./dist/cli.js"
   },
   "scripts": {
-    "dev": "tsx src/cli.ts",
-    "build": "tsc",
+    "dev": "npm run generate:schema && tsx src/cli.ts",
+    "build": "npm run generate:schema && tsc",
     "clean": "rimraf dist",
     "lint": "eslint src --ext .ts",
     "lint:fix": "eslint src --ext .ts --fix",
-    "typecheck": "tsc --noEmit",
+    "typecheck": "npm run generate:schema && tsc --noEmit",
+    "generate:schema": "tsp compile src/schemas/kumiki.tsp",
     "prepublishOnly": "npm run clean && npm run build"
   },
   "keywords": [
@@ -39,6 +40,7 @@
     "@types/node": "^20.10.5",
     "@typescript-eslint/eslint-plugin": "^8.37.0",
     "@typescript-eslint/parser": "^8.37.0",
+    "@typespec/compiler": "^1.2.1",
     "eslint": "^8.56.0",
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-import": "^2.29.1",
@@ -46,6 +48,7 @@
     "rimraf": "^5.0.5",
     "tsx": "^4.7.0",
     "typescript": "^5.3.3",
+    "typespec-zod": "^0.0.0-52",
     "vitest": "^1.1.0"
   }
 }
