@@ -1,0 +1,126 @@
+export interface KumikiProject {
+  version: string;
+  name: string;
+  settings: ProjectSettings;
+  scenes: Scene[];
+  audio?: AudioSettings;
+}
+
+export interface ProjectSettings {
+  resolution: string;
+  fps: number;
+  duration?: number | null;
+}
+
+export type Scene = TextScene | ImageScene | VideoScene;
+
+export interface BaseScene {
+  id: string;
+  duration: number;
+  background?: Background;
+  animation?: Animation;
+  transition?: Transition;
+}
+
+export interface TextScene extends BaseScene {
+  type: 'text';
+  content: TextContent;
+}
+
+export interface ImageScene extends BaseScene {
+  type: 'image';
+  content: ImageContent;
+}
+
+export interface VideoScene extends BaseScene {
+  type: 'video';
+  content: VideoContent;
+}
+
+export interface TextContent {
+  text: string;
+  style: TextStyle;
+  position: Position;
+}
+
+export interface TextStyle {
+  fontSize: number;
+  color: string;
+  fontFamily: string;
+  fontWeight?: string;
+  textAlign?: 'left' | 'center' | 'right';
+}
+
+export interface ImageContent {
+  src: string;
+  fit: 'cover' | 'contain' | 'fill';
+  position: Position;
+}
+
+export interface VideoContent {
+  src: string;
+  trim?: {
+    start: number;
+    end: number;
+  };
+}
+
+export interface Position {
+  x: number | 'center';
+  y: number | 'center';
+}
+
+export interface Background {
+  type: 'color' | 'image' | 'gradient';
+  value: string;
+}
+
+export interface Animation {
+  type: 'fade-in' | 'fade-out' | 'zoom-in' | 'zoom-out' | 'slide';
+  duration: number;
+  easing?: 'linear' | 'ease-in' | 'ease-out' | 'ease-in-out';
+  from?: number;
+  to?: number;
+  direction?: 'left' | 'right' | 'up' | 'down';
+}
+
+export interface Transition {
+  type: 'fade' | 'wipe' | 'dissolve';
+  duration: number;
+  direction?: 'left' | 'right' | 'up' | 'down';
+}
+
+export interface AudioSettings {
+  backgroundMusic?: BackgroundMusic;
+  soundEffects?: SoundEffect[];
+}
+
+export interface BackgroundMusic {
+  src: string;
+  volume: number;
+  fadeIn?: number;
+  fadeOut?: number;
+}
+
+export interface SoundEffect {
+  src: string;
+  startTime: number;
+  volume: number;
+}
+
+export interface SceneRenderOptions {
+  tempDir: string;
+  resolution: string;
+  fps: number;
+}
+
+export interface ValidationResult {
+  valid: boolean;
+  errors: ValidationError[];
+}
+
+export interface ValidationError {
+  path: string;
+  message: string;
+  code: string;
+}

@@ -1,0 +1,9 @@
+{
+  "version": "1.0",
+  "name": "Invalid Project",
+  "settings": {
+    "resolution": "invalid-resolution",
+    "fps": -30
+  },
+  "scenes": []
+}
