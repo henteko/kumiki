@@ -192,6 +192,186 @@ export class FFmpegService {
   }
 
   /**
+   * Apply fade transition between two videos
+   */
+  async fadeTransition(video1: string, video2: string, output: string, duration: number): Promise<void> {
+    if (!existsSync(video1) || !existsSync(video2)) {
+      throw new ProcessError(
+        'Input video files not found',
+        'INPUT_NOT_FOUND',
+      );
+    }
+
+    await this.ensureOutputDirectory(output);
+
+    // Get duration of first video to calculate offset
+    const video1Duration = await this.getVideoDuration(video1);
+    const offset = Math.max(0, video1Duration - duration);
+
+    // Check if videos have audio streams
+    const hasAudio = await this.hasAudioStream(video1) && await this.hasAudioStream(video2);
+
+    // Create complex filter for fade transition
+    let filter: string;
+    let args: string[];
+    
+    if (hasAudio) {
+      filter = `[0:v][1:v]xfade=transition=fade:duration=${duration}:offset=${offset}[v];[0:a][1:a]acrossfade=d=${duration}:c1=tri:c2=tri[a]`;
+      args = [
+        '-i', video1,
+        '-i', video2,
+        '-filter_complex', filter,
+        '-map', '[v]',
+        '-map', '[a]',
+        '-c:v', 'libx264',
+        '-preset', 'fast',
+        '-y',
+        output,
+      ];
+    } else {
+      filter = `[0:v][1:v]xfade=transition=fade:duration=${duration}:offset=${offset}[v]`;
+      args = [
+        '-i', video1,
+        '-i', video2,
+        '-filter_complex', filter,
+        '-map', '[v]',
+        '-c:v', 'libx264',
+        '-preset', 'fast',
+        '-y',
+        output,
+      ];
+    }
+
+    logger.info('Applying fade transition', { video1, video2, duration, offset });
+
+    await this.execute('ffmpeg', args);
+  }
+
+  /**
+   * Apply wipe transition between two videos
+   */
+  async wipeTransition(
+    video1: string, 
+    video2: string, 
+    output: string, 
+    duration: number,
+    direction: 'left' | 'right' | 'up' | 'down' = 'left'
+  ): Promise<void> {
+    if (!existsSync(video1) || !existsSync(video2)) {
+      throw new ProcessError(
+        'Input video files not found',
+        'INPUT_NOT_FOUND',
+      );
+    }
+
+    await this.ensureOutputDirectory(output);
+
+    // Get duration of first video to calculate offset
+    const video1Duration = await this.getVideoDuration(video1);
+    const offset = Math.max(0, video1Duration - duration);
+
+    // Check if videos have audio streams
+    const hasAudio = await this.hasAudioStream(video1) && await this.hasAudioStream(video2);
+
+    // Map direction to xfade transition names
+    const transitionMap = {
+      left: 'wipeleft',
+      right: 'wiperight',
+      up: 'wipeup',
+      down: 'wipedown',
+    };
+
+    let filter: string;
+    let args: string[];
+    
+    if (hasAudio) {
+      filter = `[0:v][1:v]xfade=transition=${transitionMap[direction]}:duration=${duration}:offset=${offset}[v];[0:a][1:a]acrossfade=d=${duration}:c1=tri:c2=tri[a]`;
+      args = [
+        '-i', video1,
+        '-i', video2,
+        '-filter_complex', filter,
+        '-map', '[v]',
+        '-map', '[a]',
+        '-c:v', 'libx264',
+        '-preset', 'fast',
+        '-y',
+        output,
+      ];
+    } else {
+      filter = `[0:v][1:v]xfade=transition=${transitionMap[direction]}:duration=${duration}:offset=${offset}[v]`;
+      args = [
+        '-i', video1,
+        '-i', video2,
+        '-filter_complex', filter,
+        '-map', '[v]',
+        '-c:v', 'libx264',
+        '-preset', 'fast',
+        '-y',
+        output,
+      ];
+    }
+
+    logger.info('Applying wipe transition', { video1, video2, duration, direction, offset });
+
+    await this.execute('ffmpeg', args);
+  }
+
+  /**
+   * Apply dissolve transition between two videos
+   */
+  async dissolveTransition(video1: string, video2: string, output: string, duration: number): Promise<void> {
+    if (!existsSync(video1) || !existsSync(video2)) {
+      throw new ProcessError(
+        'Input video files not found',
+        'INPUT_NOT_FOUND',
+      );
+    }
+
+    await this.ensureOutputDirectory(output);
+
+    // Get duration of first video to calculate offset
+    const video1Duration = await this.getVideoDuration(video1);
+    const offset = Math.max(0, video1Duration - duration);
+
+    // Check if videos have audio streams
+    const hasAudio = await this.hasAudioStream(video1) && await this.hasAudioStream(video2);
+
+    let filter: string;
+    let args: string[];
+    
+    if (hasAudio) {
+      filter = `[0:v][1:v]xfade=transition=dissolve:duration=${duration}:offset=${offset}[v];[0:a][1:a]acrossfade=d=${duration}:c1=tri:c2=tri[a]`;
+      args = [
+        '-i', video1,
+        '-i', video2,
+        '-filter_complex', filter,
+        '-map', '[v]',
+        '-map', '[a]',
+        '-c:v', 'libx264',
+        '-preset', 'fast',
+        '-y',
+        output,
+      ];
+    } else {
+      filter = `[0:v][1:v]xfade=transition=dissolve:duration=${duration}:offset=${offset}[v]`;
+      args = [
+        '-i', video1,
+        '-i', video2,
+        '-filter_complex', filter,
+        '-map', '[v]',
+        '-c:v', 'libx264',
+        '-preset', 'fast',
+        '-y',
+        output,
+      ];
+    }
+
+    logger.info('Applying dissolve transition', { video1, video2, duration, offset });
+
+    await this.execute('ffmpeg', args);
+  }
+
+  /**
    * Add audio to video
    */
   async addAudio(videoPath: string, audioPath: string, outputPath: string, volume = 1.0): Promise<void> {
@@ -287,6 +467,102 @@ export class FFmpegService {
           reject(new ProcessError(
             `FFmpeg process exited with code ${code}`,
             'FFMPEG_ERROR',
+            { stderr },
+          ));
+        }
+      });
+    });
+  }
+
+  /**
+   * Check if video has audio stream
+   */
+  private async hasAudioStream(videoPath: string): Promise<boolean> {
+    return new Promise((resolve) => {
+      const args = [
+        '-i', videoPath,
+        '-show_streams',
+        '-select_streams', 'a',
+        '-v', 'quiet',
+        '-of', 'json',
+      ];
+
+      const proc = spawn('ffprobe', args);
+      let stdout = '';
+
+      proc.stdout.on('data', (data: Buffer) => {
+        stdout += data.toString();
+      });
+
+      proc.on('error', (error) => {
+        // If ffprobe fails, assume no audio
+        logger.warn('Failed to check audio stream', { error: error.message });
+        resolve(false);
+      });
+
+      proc.on('close', (code) => {
+        if (code === 0) {
+          try {
+            const result = JSON.parse(stdout) as { streams?: unknown[] };
+            const hasAudio = Boolean(result.streams && result.streams.length > 0);
+            resolve(hasAudio);
+          } catch {
+            resolve(false);
+          }
+        } else {
+          resolve(false);
+        }
+      });
+    });
+  }
+
+  /**
+   * Get video duration in seconds
+   */
+  private async getVideoDuration(videoPath: string): Promise<number> {
+    return new Promise((resolve, reject) => {
+      const args = [
+        '-i', videoPath,
+        '-show_entries', 'format=duration',
+        '-v', 'quiet',
+        '-of', 'csv=p=0',
+      ];
+
+      const proc = spawn('ffprobe', args);
+      let stdout = '';
+      let stderr = '';
+
+      proc.stdout.on('data', (data: Buffer) => {
+        stdout += data.toString();
+      });
+
+      proc.stderr.on('data', (data: Buffer) => {
+        stderr += data.toString();
+      });
+
+      proc.on('error', (error) => {
+        reject(new ProcessError(
+          `Failed to get video duration: ${error.message}`,
+          'FFPROBE_ERROR',
+        ));
+      });
+
+      proc.on('close', (code) => {
+        if (code === 0) {
+          const duration = parseFloat(stdout.trim());
+          if (isNaN(duration)) {
+            reject(new ProcessError(
+              'Failed to parse video duration',
+              'DURATION_PARSE_ERROR',
+              { stdout, stderr },
+            ));
+          } else {
+            resolve(duration);
+          }
+        } else {
+          reject(new ProcessError(
+            `ffprobe process exited with code ${code}`,
+            'FFPROBE_ERROR',
             { stderr },
           ));
         }

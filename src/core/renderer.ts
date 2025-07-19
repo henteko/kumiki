@@ -7,6 +7,7 @@ import PQueue from 'p-queue';
 import { parseProjectFile } from '@/core/parser.js';
 import { SceneFactory } from '@/scenes/factory.js';
 import { FFmpegService } from '@/services/ffmpeg.js';
+import { TransitionService } from '@/services/transition.js';
 import type { KumikiProject } from '@/types/index.js';
 import { ProcessError } from '@/utils/errors.js';
 import { logger } from '@/utils/logger.js';
@@ -143,8 +144,52 @@ export class Renderer {
 
     const tempOutput = path.join(this.tempDir, 'combined.mp4');
     
+    // Apply transitions if specified
+    let processedPaths: string[] = [...scenePaths];
+    
+    if (scenePaths.length > 1) {
+      const transitionService = TransitionService.getInstance();
+      
+      // Process transitions in reverse order to handle overlapping correctly
+      for (let i = scenePaths.length - 2; i >= 0; i--) {
+        const currentScene = this.project.scenes[i];
+        
+        if (currentScene?.transition) {
+          const transitionOutput = path.join(
+            this.tempDir,
+            `transition_${i}_${i + 1}.mp4`
+          );
+          
+          logger.info('Applying transition between scenes', {
+            from: currentScene.id,
+            to: this.project.scenes[i + 1]?.id,
+            type: currentScene.transition.type,
+            direction: currentScene.transition.direction,
+          });
+          
+          // Apply transition between current and next scene
+          await transitionService.applyTransition({
+            transition: currentScene.transition,
+            scene1Path: processedPaths[i]!,
+            scene2Path: processedPaths[i + 1]!,
+            outputPath: transitionOutput,
+            resolution: this.project.settings.resolution,
+            fps: this.project.settings.fps,
+          });
+          
+          // Replace the two scenes with the transition output
+          processedPaths = [
+            ...processedPaths.slice(0, i),
+            transitionOutput,
+            ...processedPaths.slice(i + 2)
+          ];
+        }
+      }
+    }
+    
+    // Concatenate all videos (with transitions applied)
     await this.ffmpeg.concatenate({
-      inputs: scenePaths,
+      inputs: processedPaths,
       output: tempOutput,
       onProgress: (progress) => {
         if (this.options.onProgress) {

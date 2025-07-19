@@ -1,0 +1,185 @@
+{
+  "version": "1.0",
+  "name": "Transition Test Video",
+  "settings": {
+    "resolution": "1920x1080",
+    "fps": 30
+  },
+  "scenes": [
+    {
+      "id": "scene1",
+      "type": "text",
+      "duration": 3,
+      "content": {
+        "text": "Scene 1: Fade Transition",
+        "style": {
+          "fontSize": 72,
+          "color": "#FFFFFF",
+          "fontFamily": "Arial"
+        },
+        "position": {
+          "x": "center",
+          "y": "center"
+        }
+      },
+      "background": {
+        "type": "color",
+        "value": "#FF0000"
+      },
+      "transition": {
+        "type": "fade",
+        "duration": 1.0
+      }
+    },
+    {
+      "id": "scene2",
+      "type": "text",
+      "duration": 3,
+      "content": {
+        "text": "Scene 2: Wipe Left",
+        "style": {
+          "fontSize": 72,
+          "color": "#FFFFFF",
+          "fontFamily": "Arial"
+        },
+        "position": {
+          "x": "center",
+          "y": "center"
+        }
+      },
+      "background": {
+        "type": "color",
+        "value": "#0000FF"
+      },
+      "transition": {
+        "type": "wipe",
+        "duration": 1.0,
+        "direction": "left"
+      }
+    },
+    {
+      "id": "scene3",
+      "type": "text",
+      "duration": 3,
+      "content": {
+        "text": "Scene 3: Wipe Right",
+        "style": {
+          "fontSize": 72,
+          "color": "#FFFFFF",
+          "fontFamily": "Arial"
+        },
+        "position": {
+          "x": "center",
+          "y": "center"
+        }
+      },
+      "background": {
+        "type": "color",
+        "value": "#00FF00"
+      },
+      "transition": {
+        "type": "wipe",
+        "duration": 1.0,
+        "direction": "right"
+      }
+    },
+    {
+      "id": "scene4",
+      "type": "text",
+      "duration": 3,
+      "content": {
+        "text": "Scene 4: Wipe Up",
+        "style": {
+          "fontSize": 72,
+          "color": "#FFFFFF",
+          "fontFamily": "Arial"
+        },
+        "position": {
+          "x": "center",
+          "y": "center"
+        }
+      },
+      "background": {
+        "type": "color",
+        "value": "#FF00FF"
+      },
+      "transition": {
+        "type": "wipe",
+        "duration": 1.0,
+        "direction": "up"
+      }
+    },
+    {
+      "id": "scene5",
+      "type": "text",
+      "duration": 3,
+      "content": {
+        "text": "Scene 5: Wipe Down",
+        "style": {
+          "fontSize": 72,
+          "color": "#000000",
+          "fontFamily": "Arial"
+        },
+        "position": {
+          "x": "center",
+          "y": "center"
+        }
+      },
+      "background": {
+        "type": "color",
+        "value": "#FFFF00"
+      },
+      "transition": {
+        "type": "wipe",
+        "duration": 1.0,
+        "direction": "down"
+      }
+    },
+    {
+      "id": "scene6",
+      "type": "text",
+      "duration": 3,
+      "content": {
+        "text": "Scene 6: Dissolve Transition",
+        "style": {
+          "fontSize": 72,
+          "color": "#FFFFFF",
+          "fontFamily": "Arial"
+        },
+        "position": {
+          "x": "center",
+          "y": "center"
+        }
+      },
+      "background": {
+        "type": "color",
+        "value": "#00FFFF"
+      },
+      "transition": {
+        "type": "dissolve",
+        "duration": 1.0
+      }
+    },
+    {
+      "id": "scene7",
+      "type": "text",
+      "duration": 3,
+      "content": {
+        "text": "Scene 7: The End (No transition)",
+        "style": {
+          "fontSize": 72,
+          "color": "#FFFFFF",
+          "fontFamily": "Arial"
+        },
+        "position": {
+          "x": "center",
+          "y": "center"
+        }
+      },
+      "background": {
+        "type": "color",
+        "value": "#808080"
+      }
+    }
+  ]
+}
