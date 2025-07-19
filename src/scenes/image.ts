@@ -95,6 +95,9 @@ export class ImageSceneRenderer extends BaseScene<ImageScene> {
     // First render static image
     const imagePath = await this.renderStatic();
     
+    // Get animation filter if available
+    const animationFilter = this.getAnimationFilter();
+    
     // Convert image to video using FFmpeg
     const videoPath = this.getVideoOutputPath();
     const ffmpeg = FFmpegService.getInstance();
@@ -105,11 +108,13 @@ export class ImageSceneRenderer extends BaseScene<ImageScene> {
       duration: this.scene.duration,
       fps: this.options.fps,
       resolution: this.options.resolution,
+      filter: animationFilter,
     });
 
     logger.info('Image scene rendered to video', {
       sceneId: this.scene.id,
       outputPath: videoPath,
+      animation: this.scene.animation ? this.scene.animation.type : 'none',
     });
 
     return videoPath;
