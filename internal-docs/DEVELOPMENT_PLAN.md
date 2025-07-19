@@ -12,18 +12,18 @@
 2. **previewコマンド** - 各シーンの静止画像生成
 3. **generateコマンド** - 動画の生成と結合
 
-### フェーズ1: Validateコマンドの実装（最優先）
+### フェーズ1: Validateコマンドの実装（最優先）✅ 完了
 
 #### 1.1 プロジェクトの初期セットアップ
-- [ ] package.jsonの作成
+- [x] package.jsonの作成
   - TypeScript、ESM対応の設定
-  - 必要な依存関係の定義（commander, joi/zod, winston）
-- [ ] tsconfig.jsonの設定
+  - 必要な依存関係の定義（commander, zod, winston, typespec-zod）
+- [x] tsconfig.jsonの設定
   - strict modeの有効化
   - ESM対応の設定
 
 #### 1.2 基本的なディレクトリ構造
-- [ ] 必要最小限のディレクトリ作成
+- [x] 必要最小限のディレクトリ作成
   ```
   src/
   ├── core/
@@ -40,16 +40,23 @@
   ```
 
 #### 1.3 型定義とバリデーション
-- [ ] JSON構造の型定義（KumikiProject, Scene等）
-- [ ] Joi/Zodを使用したスキーマ定義
-- [ ] parser.ts - JSON読み込みと基本的な解析
-- [ ] validator.ts - 詳細な検証ロジック
-- [ ] エラーメッセージの整備
+- [x] JSON構造の型定義（KumikiProject, Scene等）
+- [x] TypeSpecからZodスキーマを自動生成
+- [x] parser.ts - JSON読み込みと基本的な解析
+- [x] validator.ts - 詳細な検証ロジック
+- [x] エラーメッセージの整備
 
 #### 1.4 Validateコマンド
-- [ ] validate.ts - コマンドの実装
-- [ ] cli.ts - CLIエントリーポイント（validateのみ）
-- [ ] 基本的なログ出力とエラーハンドリング
+- [x] validate.ts - コマンドの実装
+- [x] cli.ts - CLIエントリーポイント（validateのみ）
+- [x] 基本的なログ出力とエラーハンドリング
+
+#### 1.5 追加の実装
+- [x] ESLint/Prettier設定
+- [x] .gitignore作成
+- [x] CLAUDE.md作成（開発ルール）
+- [x] TypeSpecによるスキーマ管理
+- [x] npm scriptsの整備（generate:schema自動実行）
 
 ### フェーズ2: Previewコマンドの実装（高優先度）
 
