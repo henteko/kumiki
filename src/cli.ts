@@ -6,6 +6,7 @@ import { fileURLToPath } from 'node:url';
 
 import { program } from 'commander';
 
+import { generateCommand } from '@/commands/generate.js';
 import { previewCommand } from '@/commands/preview.js';
 import { validateCommand } from '@/commands/validate.js';
 import { logger } from '@/utils/logger.js';
@@ -23,9 +24,7 @@ program
 
 program.addCommand(validateCommand);
 program.addCommand(previewCommand);
-
-// TODO: Add more commands
-// program.addCommand(generateCommand);
+program.addCommand(generateCommand);
 
 program.parse();
 

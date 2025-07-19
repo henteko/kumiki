@@ -36,3 +36,10 @@ export class FFmpegError extends KumikiError {
     this.name = 'FFmpegError';
   }
 }
+
+export class ProcessError extends KumikiError {
+  constructor(message: string, code: string, details?: unknown) {
+    super(message, code, details);
+    this.name = 'ProcessError';
+  }
+}

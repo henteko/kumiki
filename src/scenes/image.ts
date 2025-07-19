@@ -3,6 +3,7 @@ import { copyFile, readFile } from 'node:fs/promises';
 import path from 'node:path';
 
 import { BaseScene } from '@/scenes/base.js';
+import { FFmpegService } from '@/services/ffmpeg.js';
 import { PuppeteerService } from '@/services/puppeteer.js';
 import type { ImageScene } from '@/types/index.js';
 import { RenderError } from '@/utils/errors.js';
@@ -81,16 +82,37 @@ export class ImageSceneRenderer extends BaseScene<ImageScene> {
   }
 
   /**
-   * Render image scene to video (not implemented yet)
+   * Render image scene to video
    */
-  renderVideo(): Promise<string> {
-    return Promise.reject(
-      new RenderError(
-        'Video rendering not implemented yet',
-        'NOT_IMPLEMENTED',
-        { sceneId: this.scene.id },
-      ),
-    );
+  async renderVideo(): Promise<string> {
+    this.validate();
+    
+    logger.info('Rendering image scene to video', {
+      sceneId: this.scene.id,
+      duration: this.scene.duration,
+    });
+
+    // First render static image
+    const imagePath = await this.renderStatic();
+    
+    // Convert image to video using FFmpeg
+    const videoPath = this.getVideoOutputPath();
+    const ffmpeg = FFmpegService.getInstance();
+    
+    await ffmpeg.imageToVideo({
+      input: imagePath,
+      output: videoPath,
+      duration: this.scene.duration,
+      fps: this.options.fps,
+      resolution: this.options.resolution,
+    });
+
+    logger.info('Image scene rendered to video', {
+      sceneId: this.scene.id,
+      outputPath: videoPath,
+    });
+
+    return videoPath;
   }
 
   /**

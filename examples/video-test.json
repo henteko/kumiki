@@ -1,0 +1,56 @@
+{
+  "version": "1.0",
+  "name": "Video Test Project",
+  "settings": {
+    "resolution": "1920x1080",
+    "fps": 30
+  },
+  "scenes": [
+    {
+      "id": "text-intro",
+      "type": "text",
+      "duration": 2,
+      "content": {
+        "text": "Video Generation Test",
+        "style": {
+          "fontSize": 72,
+          "color": "#ffffff",
+          "fontFamily": "Arial",
+          "fontWeight": "bold",
+          "textAlign": "center"
+        },
+        "position": { "x": "center", "y": "center" }
+      },
+      "background": {
+        "type": "gradient",
+        "value": "linear-gradient(135deg, #667eea 0%, #764ba2 100%)"
+      }
+    },
+    {
+      "id": "video-scene",
+      "type": "video",
+      "duration": 3,
+      "content": {
+        "src": "./examples/assets/test-video.mp4",
+        "trim": {
+          "start": 0,
+          "end": 3
+        }
+      }
+    },
+    {
+      "id": "image-scene",
+      "type": "image",
+      "duration": 2,
+      "content": {
+        "src": "./examples/assets/sample-image.png",
+        "fit": "contain",
+        "position": { "x": "center", "y": "center" }
+      },
+      "background": {
+        "type": "color",
+        "value": "#1a1a1a"
+      }
+    }
+  ]
+}

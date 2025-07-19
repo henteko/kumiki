@@ -1,4 +1,5 @@
 import { BaseScene } from '@/scenes/base.js';
+import { FFmpegService } from '@/services/ffmpeg.js';
 import { PuppeteerService } from '@/services/puppeteer.js';
 import type { TextScene } from '@/types/index.js';
 import { RenderError } from '@/utils/errors.js';
@@ -64,16 +65,37 @@ export class TextSceneRenderer extends BaseScene<TextScene> {
   }
 
   /**
-   * Render text scene to video (not implemented yet)
+   * Render text scene to video
    */
-  renderVideo(): Promise<string> {
-    return Promise.reject(
-      new RenderError(
-        'Video rendering not implemented yet',
-        'NOT_IMPLEMENTED',
-        { sceneId: this.scene.id },
-      ),
-    );
+  async renderVideo(): Promise<string> {
+    this.validate();
+    
+    logger.info('Rendering text scene to video', {
+      sceneId: this.scene.id,
+      duration: this.scene.duration,
+    });
+
+    // First render static image
+    const imagePath = await this.renderStatic();
+    
+    // Convert image to video using FFmpeg
+    const videoPath = this.getVideoOutputPath();
+    const ffmpeg = FFmpegService.getInstance();
+    
+    await ffmpeg.imageToVideo({
+      input: imagePath,
+      output: videoPath,
+      duration: this.scene.duration,
+      fps: this.options.fps,
+      resolution: this.options.resolution,
+    });
+
+    logger.info('Text scene rendered to video', {
+      sceneId: this.scene.id,
+      outputPath: videoPath,
+    });
+
+    return videoPath;
   }
 
   /**
