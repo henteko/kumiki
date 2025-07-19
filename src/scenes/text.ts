@@ -78,9 +78,6 @@ export class TextSceneRenderer extends BaseScene<TextScene> {
     // First render static image
     const imagePath = await this.renderStatic();
     
-    // Get animation filter if available
-    const animationFilter = this.getAnimationFilter();
-    
     // Convert image to video using FFmpeg
     const videoPath = this.getVideoOutputPath();
     const ffmpeg = FFmpegService.getInstance();
@@ -91,13 +88,11 @@ export class TextSceneRenderer extends BaseScene<TextScene> {
       duration: this.scene.duration,
       fps: this.options.fps,
       resolution: this.options.resolution,
-      filter: animationFilter,
     });
 
     logger.info('Text scene rendered to video', {
       sceneId: this.scene.id,
       outputPath: videoPath,
-      animation: this.scene.animation ? this.scene.animation.type : 'none',
     });
 
     return videoPath;

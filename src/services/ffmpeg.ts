@@ -26,7 +26,6 @@ export interface ImageToVideoOptions {
   duration: number;
   fps: number;
   resolution: string;
-  filter?: string;
   onProgress?: (progress: number) => void;
 }
 
@@ -76,7 +75,7 @@ export class FFmpegService {
    * Convert image to video
    */
   async imageToVideo(options: ImageToVideoOptions): Promise<void> {
-    const { input, output, duration, fps, resolution, filter } = options;
+    const { input, output, duration, fps, resolution } = options;
     
     if (!existsSync(input)) {
       throw new ProcessError(
@@ -93,24 +92,14 @@ export class FFmpegService {
       '-c:v', 'libx264',
       '-t', duration.toString(),
       '-r', fps.toString(),
+      '-s', resolution,
       '-pix_fmt', 'yuv420p',
-    ];
-
-    // Build video filter chain
-    let videoFilter = `scale=${resolution}`;
-    if (filter) {
-      videoFilter = `${videoFilter},${filter}`;
-    }
-    args.push('-vf', videoFilter);
-
-    args.push(
       '-preset', 'fast',
       '-y',
       output,
-    );
+    ];
 
-    logger.info('Converting image to video', { input, output, duration, filter });
-    logger.debug('FFmpeg args for imageToVideo', { args });
+    logger.info('Converting image to video', { input, output, duration });
 
     await this.execute('ffmpeg', args, options.onProgress);
   }

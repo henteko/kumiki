@@ -2,7 +2,6 @@ import { existsSync } from 'node:fs';
 import { mkdir } from 'node:fs/promises';
 import path from 'node:path';
 
-import { AnimationService } from '@/services/animation.js';
 import type { Scene, SceneRenderOptions } from '@/types/index.js';
 import { RenderError } from '@/utils/errors.js';
 import { logger } from '@/utils/logger.js';
@@ -85,30 +84,4 @@ export abstract class BaseScene<T extends Scene = Scene> {
     return pos;
   }
 
-  /**
-   * Get animation filter for the scene
-   */
-  protected getAnimationFilter(): string | undefined {
-    if (!this.scene.animation) {
-      return undefined;
-    }
-
-    const filter = AnimationService.generateFilter(
-      this.scene.animation,
-      this.scene.duration,
-      this.options.resolution,
-    );
-
-    if (!filter || !filter.filter) {
-      return undefined;
-    }
-
-    logger.debug('Animation filter generated', {
-      sceneId: this.scene.id,
-      type: this.scene.animation.type,
-      filter: filter.filter,
-    });
-
-    return filter.filter;
-  }
 }

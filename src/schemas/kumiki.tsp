@@ -33,7 +33,6 @@ model BaseScene {
   duration: float64;
   
   background?: Background;
-  animation?: Animation;
   transition?: Transition;
 }
 
@@ -97,15 +96,6 @@ model Position {
 model Background {
   type: "color" | "image" | "gradient";
   value: string;
-}
-
-model Animation {
-  type: "fade-in" | "fade-out";
-  
-  @minValue(0.1)
-  duration: float64;
-  
-  easing?: "linear" | "ease-in" | "ease-out" | "ease-in-out";
 }
 
 model Transition {
