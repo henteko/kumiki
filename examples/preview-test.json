@@ -1,0 +1,64 @@
+{
+  "version": "1.0",
+  "name": "Preview Test Project",
+  "settings": {
+    "resolution": "1920x1080",
+    "fps": 30,
+    "duration": null
+  },
+  "scenes": [
+    {
+      "id": "text-scene-1",
+      "type": "text",
+      "duration": 3,
+      "content": {
+        "text": "Welcome to Kumiki!",
+        "style": {
+          "fontSize": 72,
+          "color": "#ffffff",
+          "fontFamily": "Arial",
+          "fontWeight": "bold",
+          "textAlign": "center"
+        },
+        "position": { "x": "center", "y": "center" }
+      },
+      "background": {
+        "type": "gradient",
+        "value": "linear-gradient(135deg, #667eea 0%, #764ba2 100%)"
+      }
+    },
+    {
+      "id": "text-scene-2",
+      "type": "text",
+      "duration": 4,
+      "content": {
+        "text": "Create amazing videos\nwith simple JSON",
+        "style": {
+          "fontSize": 48,
+          "color": "#333333",
+          "fontFamily": "Arial",
+          "textAlign": "center"
+        },
+        "position": { "x": "center", "y": "center" }
+      },
+      "background": {
+        "type": "color",
+        "value": "#f0f0f0"
+      }
+    },
+    {
+      "id": "image-scene-1",
+      "type": "image",
+      "duration": 3,
+      "content": {
+        "src": "./examples/assets/sample-image.png",
+        "fit": "contain",
+        "position": { "x": "center", "y": "center" }
+      },
+      "background": {
+        "type": "color",
+        "value": "#222222"
+      }
+    }
+  ]
+}
