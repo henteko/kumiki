@@ -28,12 +28,6 @@ export class AnimationService {
         return this.generateFadeInFilter(animation, sceneDuration);
       case 'fade-out':
         return this.generateFadeOutFilter(animation, sceneDuration);
-      case 'zoom-in':
-        return this.generateZoomInFilter(animation, sceneDuration, width, height);
-      case 'zoom-out':
-        return this.generateZoomOutFilter(animation, sceneDuration, width, height);
-      case 'slide':
-        return this.generateSlideFilter(animation, sceneDuration, width, height);
       default:
         logger.warn('Unknown animation type', { type: animation.type });
         return null;
@@ -78,59 +72,7 @@ export class AnimationService {
     };
   }
 
-  /**
-   * Generate zoom-in filter (placeholder for now)
-   */
-  private static generateZoomInFilter(
-    animation: Animation,
-    _sceneDuration: number,
-    _width: number,
-    _height: number,
-  ): AnimationFilter {
-    // TODO: Implement zoom-in with scale filter
-    logger.warn('Zoom-in animation not yet implemented');
-    return {
-      filter: '',
-      startTime: 0,
-      endTime: animation.duration,
-    };
-  }
 
-  /**
-   * Generate zoom-out filter (placeholder for now)
-   */
-  private static generateZoomOutFilter(
-    animation: Animation,
-    _sceneDuration: number,
-    _width: number,
-    _height: number,
-  ): AnimationFilter {
-    // TODO: Implement zoom-out with scale filter
-    logger.warn('Zoom-out animation not yet implemented');
-    return {
-      filter: '',
-      startTime: 0,
-      endTime: animation.duration,
-    };
-  }
-
-  /**
-   * Generate slide filter (placeholder for now)
-   */
-  private static generateSlideFilter(
-    animation: Animation,
-    _sceneDuration: number,
-    _width: number,
-    _height: number,
-  ): AnimationFilter {
-    // TODO: Implement slide with overlay filter
-    logger.warn('Slide animation not yet implemented');
-    return {
-      filter: '',
-      startTime: 0,
-      endTime: animation.duration,
-    };
-  }
 
   /**
    * Combine multiple filters

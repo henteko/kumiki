@@ -100,15 +100,12 @@ model Background {
 }
 
 model Animation {
-  type: "fade-in" | "fade-out" | "zoom-in" | "zoom-out" | "slide";
+  type: "fade-in" | "fade-out";
   
   @minValue(0.1)
   duration: float64;
   
   easing?: "linear" | "ease-in" | "ease-out" | "ease-in-out";
-  from?: float64;
-  to?: float64;
-  direction?: "left" | "right" | "up" | "down";
 }
 
 model Transition {
