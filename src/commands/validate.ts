@@ -1,7 +1,9 @@
 import { Command } from 'commander';
+import * as React from 'react';
 
 import { parseProjectFile } from '@/core/parser.js';
 import { validateProject } from '@/core/validator.js';
+import { ValidationResult } from '@/ui/components.js';
 import { logger } from '@/utils/logger.js';
 
 export const validateCommand = new Command('validate')
@@ -22,16 +24,17 @@ export const validateCommand = new Command('validate')
       // Validate project structure
       const result = validateProject(projectData);
 
+      // Display result using ink-ui
+      logger.renderComponent(
+        React.createElement(ValidationResult, { valid: result.valid, errors: result.errors })
+      );
+
+      // Small delay to allow ink-ui to render
+      await new Promise(resolve => setTimeout(resolve, 100));
+      
       if (result.valid) {
-        logger.info('✅ Validation successful!');
         process.exit(0);
       } else {
-        logger.error('❌ Validation failed!');
-        
-        result.errors.forEach((error) => {
-          logger.error(`  - ${error.path}: ${error.message}`);
-        });
-        
         process.exit(1);
       }
     } catch (error) {

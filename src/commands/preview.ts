@@ -3,11 +3,13 @@ import { mkdir } from 'node:fs/promises';
 import path from 'node:path';
 
 import { Command } from 'commander';
+import * as React from 'react';
 
 import { parseProjectFile } from '@/core/parser.js';
 import { validateProject } from '@/core/validator.js';
 import { registerSceneRenderers, SceneFactory } from '@/scenes/index.js';
 import { PuppeteerService } from '@/services/puppeteer.js';
+import { ProcessingScene, PreviewSummary, ValidationResult } from '@/ui/components.js';
 import { logger } from '@/utils/logger.js';
 
 export const previewCommand = new Command('preview')
@@ -31,10 +33,9 @@ export const previewCommand = new Command('preview')
       const validationResult = validateProject(projectData);
 
       if (!validationResult.valid) {
-        logger.error('Project validation failed');
-        validationResult.errors.forEach((error) => {
-          logger.error(`  - ${error.path}: ${error.message}`);
-        });
+        logger.renderComponent(
+          React.createElement(ValidationResult, { valid: false, errors: validationResult.errors })
+        );
         process.exit(1);
       }
 
@@ -50,10 +51,14 @@ export const previewCommand = new Command('preview')
       const results: Array<{ sceneId: string; outputPath: string }> = [];
       
       for (const [index, scene] of projectData.scenes.entries()) {
-        logger.info(`Processing scene ${index + 1}/${projectData.scenes.length}`, {
-          sceneId: scene.id,
-          type: scene.type,
-        });
+        logger.renderComponent(
+          React.createElement(ProcessingScene, {
+            current: index + 1,
+            total: projectData.scenes.length,
+            sceneId: scene.id,
+            sceneType: scene.type
+          })
+        );
 
         try {
           // Create scene renderer
@@ -71,12 +76,12 @@ export const previewCommand = new Command('preview')
             outputPath,
           });
 
-          logger.info(`✅ Scene preview generated`, {
+          logger.success(`Scene preview generated`, {
             sceneId: scene.id,
             outputPath,
           });
         } catch (error) {
-          logger.error(`❌ Failed to render scene`, {
+          logger.error(`Failed to render scene`, {
             sceneId: scene.id,
             error: error instanceof Error ? error.message : String(error),
           });
@@ -84,17 +89,17 @@ export const previewCommand = new Command('preview')
         }
       }
 
-      // Summary
-      logger.info('🎉 Preview generation completed!', {
-        totalScenes: projectData.scenes.length,
-        outputDir,
-      });
-
-      // Display results
-      console.log('\nGenerated previews:');
-      results.forEach(({ sceneId, outputPath }) => {
-        console.log(`  - ${sceneId}: ${path.relative(process.cwd(), outputPath)}`);
-      });
+      // Display summary
+      logger.clear();
+      logger.renderComponent(
+        React.createElement(PreviewSummary, {
+          results: results.map(({ sceneId, outputPath }) => ({
+            sceneId,
+            outputPath: path.relative(process.cwd(), outputPath)
+          })),
+          outputDir
+        })
+      );
 
       // Cleanup Puppeteer
       await PuppeteerService.cleanup();

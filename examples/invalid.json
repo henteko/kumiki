@@ -2,8 +2,17 @@
   "version": "1.0",
   "name": "Invalid Project",
   "settings": {
-    "resolution": "invalid-resolution",
-    "fps": -30
+    "resolution": { "width": 1920, "height": 1080 },
+    "fps": 30
   },
-  "scenes": []
+  "scenes": [
+    {
+      "id": "scene1",
+      "type": "invalid-type",
+      "duration": 3,
+      "content": {
+        "text": "Hello"
+      }
+    }
+  ]
 }

@@ -49,7 +49,7 @@ export class TransitionService {
       case 'dissolve':
         return this.applyDissolveTransition(options);
       default:
-        logger.warn('Unknown transition type', { type: transition.type });
+        logger.warning('Unknown transition type', { type: (transition as { type: string }).type });
         return options.scene2Path; // Fallback to no transition
     }
   }

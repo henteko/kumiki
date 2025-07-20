@@ -2,12 +2,14 @@ import { existsSync } from 'node:fs';
 import path from 'node:path';
 
 import { Command } from 'commander';
+import * as React from 'react';
 
 import { parseProjectFile } from '@/core/parser.js';
 import { Renderer } from '@/core/renderer.js';
 import { validateProject } from '@/core/validator.js';
 import { registerSceneRenderers } from '@/scenes/index.js';
 import { PuppeteerService } from '@/services/puppeteer.js';
+import { GenerateProgress, ValidationResult } from '@/ui/components.js';
 import { logger } from '@/utils/logger.js';
 
 
@@ -41,10 +43,9 @@ export const generateCommand = new Command('generate')
       const validationResult = validateProject(data);
 
       if (!validationResult.valid) {
-        logger.error('❌ Validation failed!');
-        validationResult.errors.forEach((error) => {
-          logger.error(`  - ${error.path}: ${error.message}`);
-        });
+        logger.renderComponent(
+          React.createElement(ValidationResult, { valid: false, errors: validationResult.errors })
+        );
         process.exit(1);
       }
 
@@ -55,16 +56,18 @@ export const generateCommand = new Command('generate')
         keepTemp: options.keepTemp,
         concurrency: parseInt(options.concurrency, 10),
         onProgress: (progress: number): void => {
-          process.stdout.write(`\rProgress: ${Math.round(progress)}%`);
+          logger.renderComponent(
+            React.createElement(GenerateProgress, { progress, phase: "rendering" })
+          );
         },
       });
 
       // Render video
       await renderer.render();
       
-      // Clear progress line and show completion
-      process.stdout.write('\r\x1b[K'); // Clear line
-      logger.info('🎉 Video generation completed!', {
+      // Show completion
+      logger.clear();
+      logger.success('Video generation completed!', {
         output: path.resolve(options.output),
       });
       

@@ -1,5 +1,7 @@
 import winston from 'winston';
 
+import { InkLogger } from '@/ui/logger.js';
+
 const { combine, timestamp, printf, colorize, errors } = winston.format;
 
 const logFormat = printf(({ level, message, timestamp, ...meta }) => {
@@ -7,7 +9,7 @@ const logFormat = printf(({ level, message, timestamp, ...meta }) => {
   return `${String(timestamp)} [${String(level)}]: ${String(message)} ${metaStr}`;
 });
 
-export const logger = winston.createLogger({
+const winstonLogger = winston.createLogger({
   level: process.env.LOG_LEVEL || 'info',
   format: combine(
     errors({ stack: true }),
@@ -20,6 +22,8 @@ export const logger = winston.createLogger({
     }),
   ],
 });
+
+export const logger = InkLogger.create(winstonLogger);
 
 export function setLogLevel(level: string): void {
   logger.level = level;

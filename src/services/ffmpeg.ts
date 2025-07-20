@@ -561,7 +561,7 @@ export class FFmpegService {
 
       proc.on('error', (error) => {
         // If ffprobe fails, assume no audio
-        logger.warn('Failed to check audio stream', { error: error.message });
+        logger.warning('Failed to check audio stream', { error: error instanceof Error ? error.message : String(error) });
         resolve(false);
       });
 

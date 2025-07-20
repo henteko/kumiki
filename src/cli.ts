@@ -30,6 +30,6 @@ program.parse();
 
 // Handle uncaught errors
 process.on('unhandledRejection', (reason) => {
-  logger.error('Unhandled rejection:', reason);
+  logger.error('Unhandled rejection:', reason instanceof Error ? { error: reason.message } : { reason });
   process.exit(1);
 });
