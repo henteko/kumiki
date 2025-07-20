@@ -3,6 +3,7 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 
 import { BaseScene } from './base.js';
+import { TextSceneRenderer } from './text.js';
 
 import { FFmpegService } from '@/services/ffmpeg.js';
 import { PuppeteerService } from '@/services/puppeteer.js';
@@ -114,23 +115,15 @@ export class CompositeSceneRenderer extends BaseScene<CompositeScene> {
   private renderTextLayer(layer: Layer & { type: 'text' }): string {
     const { content, zIndex = 0, opacity = 1 } = layer;
     const { text, style, position } = content;
+    const { width, height } = this.parseResolution();
     
-    const positionStyles = this.getPositionStyles(position);
-    const textStyles = `
-      font-size: ${style.fontSize}px;
-      color: ${style.color};
-      font-family: ${style.fontFamily};
-      font-weight: ${style.fontWeight || 'normal'};
-      text-align: ${style.textAlign || 'left'};
-      white-space: pre-wrap;
-      opacity: ${opacity};
-    `;
-
+    // Use TextSceneRenderer's static method to generate text element
+    const textElement = TextSceneRenderer.generateTextElement(text, style, position, width, height);
+    
+    // Wrap with layer div and apply opacity
     return `
-      <div class="layer" style="z-index: ${zIndex};">
-        <div style="${positionStyles} ${textStyles}">
-          ${this.escapeHtml(text)}
-        </div>
+      <div class="layer" style="z-index: ${zIndex}; opacity: ${opacity};">
+        ${textElement}
       </div>
     `;
   }
@@ -149,45 +142,41 @@ export class CompositeSceneRenderer extends BaseScene<CompositeScene> {
     const mimeType = this.getMimeType(imagePath);
     const dataUri = `data:${mimeType};base64,${base64}`;
     
-    const positionStyles = this.getPositionStyles(position);
+    // Build position styles
+    const positionStyles = [];
+    positionStyles.push('position: absolute');
+    
+    if (position.x === 'center') {
+      positionStyles.push('left: 50%', 'transform: translateX(-50%)');
+    } else {
+      positionStyles.push(`left: ${position.x}px`);
+    }
+    
+    if (position.y === 'center') {
+      positionStyles.push('top: 50%');
+      if (position.x === 'center') {
+        // Replace the transform to handle both X and Y
+        positionStyles[positionStyles.indexOf('transform: translateX(-50%)')] = 'transform: translate(-50%, -50%)';
+      } else {
+        positionStyles.push('transform: translateY(-50%)');
+      }
+    } else {
+      positionStyles.push(`top: ${position.y}px`);
+    }
+    
     const fitStyles = this.getFitStyles(fit);
     
     return `
       <div class="layer" style="z-index: ${zIndex};">
         <img 
           src="${dataUri}" 
-          style="${positionStyles} ${fitStyles} opacity: ${opacity};"
+          style="${positionStyles.join('; ')}; ${fitStyles} opacity: ${opacity};"
           alt=""
         />
       </div>
     `;
   }
 
-  /**
-   * Get position styles
-   */
-  private getPositionStyles(position: { x: number | 'center'; y: number | 'center' }): string {
-    const styles: string[] = ['position: absolute;'];
-    
-    if (position.x === 'center') {
-      styles.push('left: 50%;', 'transform: translateX(-50%);');
-    } else {
-      styles.push(`left: ${position.x}px;`);
-    }
-    
-    if (position.y === 'center') {
-      styles.push('top: 50%;');
-      if (position.x === 'center') {
-        styles[styles.indexOf('transform: translateX(-50%);')] = 'transform: translate(-50%, -50%);';
-      } else {
-        styles.push('transform: translateY(-50%);');
-      }
-    } else {
-      styles.push(`top: ${position.y}px;`);
-    }
-    
-    return styles.join(' ');
-  }
 
   /**
    * Get fit styles for images
@@ -205,18 +194,6 @@ export class CompositeSceneRenderer extends BaseScene<CompositeScene> {
     }
   }
 
-  /**
-   * Escape HTML special characters
-   */
-  private escapeHtml(text: string): string {
-    return text
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;')
-      .replace(/"/g, '&quot;')
-      .replace(/'/g, '&#039;')
-      .replace(/\n/g, '<br>');
-  }
 
   /**
    * Get MIME type from file extension

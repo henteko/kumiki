@@ -99,56 +99,107 @@ export class TextSceneRenderer extends BaseScene<TextScene> {
   }
 
   /**
+   * Generate text element HTML (for reuse in CompositeSceneRenderer)
+   */
+  static generateTextElement(
+    text: string,
+    style: TextScene['content']['style'],
+    position: TextScene['content']['position'],
+    width: number,
+    height: number
+  ): string {
+    // Calculate text position
+    const textX = TextSceneRenderer.calculatePositionStatic(position.x, width, 0);
+    const textY = TextSceneRenderer.calculatePositionStatic(position.y, height, 0);
+
+    const positionStyles = [];
+    if (position.x === 'center') {
+      positionStyles.push('left: 50%', 'transform: translateX(-50%)');
+    } else {
+      positionStyles.push(`left: ${textX}px`);
+    }
+    
+    if (position.y === 'center') {
+      positionStyles.push('top: 50%');
+      if (position.x === 'center') {
+        // Replace the transform to handle both X and Y
+        positionStyles[positionStyles.indexOf('transform: translateX(-50%)')] = 'transform: translate(-50%, -50%)';
+      } else {
+        positionStyles.push('transform: translateY(-50%)');
+      }
+    } else {
+      positionStyles.push(`top: ${textY}px`);
+    }
+
+    const textStyleParts = [
+      'position: absolute',
+      ...positionStyles,
+      `font-family: '${style.fontFamily}', sans-serif`,
+      `font-size: ${style.fontSize}px`,
+      `color: ${style.color}`,
+      `font-weight: ${style.fontWeight || 'normal'}`,
+      `text-align: ${style.textAlign || 'left'}`,
+      'line-height: 1.5',
+      'white-space: pre-wrap',
+      'word-wrap: break-word',
+      'max-width: 90%'
+    ];
+
+    const textStyles = textStyleParts.join('; ');
+
+    return `<div style="${textStyles}">${TextSceneRenderer.escapeHtmlStatic(text)}</div>`;
+  }
+
+  /**
+   * Calculate position value (static version for reuse)
+   */
+  private static calculatePositionStatic(value: number | 'center', dimension: number, padding: number): number {
+    if (value === 'center') {
+      return dimension / 2;
+    }
+    return value + padding;
+  }
+
+  /**
+   * Escape HTML special characters (static version for reuse)
+   */
+  static escapeHtmlStatic(text: string): string {
+    const map: Record<string, string> = {
+      '&': '&amp;',
+      '<': '&lt;',
+      '>': '&gt;',
+      '"': '&quot;',
+      "'": '&#39;',
+    };
+    return text
+      .replace(/[&<>"']/g, (m) => map[m] || m)
+      .replace(/\n/g, '<br>');
+  }
+
+  /**
    * Generate HTML for text scene
    */
   private generateHTML(width: number, height: number): string {
     const { text, style, position } = this.scene.content;
     const background = this.scene.background;
 
-    // Calculate text position
-    const textX = this.calculatePosition(position.x, width, 0);
-    const textY = this.calculatePosition(position.y, height, 0);
-
     // Generate background styles
     const backgroundStyles = this.getBackgroundStyles(background);
 
-    // Generate text styles
-    const textStyles = `
-      .text-container {
-        position: absolute;
-        width: 100%;
-        height: 100%;
-        display: flex;
-        align-items: ${position.y === 'center' ? 'center' : 'flex-start'};
-        justify-content: ${position.x === 'center' ? 'center' : 'flex-start'};
-        padding: 20px;
-      }
-      
-      .text {
-        font-family: "${style.fontFamily}", sans-serif;
-        font-size: ${style.fontSize}px;
-        color: ${style.color};
-        font-weight: ${style.fontWeight || 'normal'};
-        text-align: ${style.textAlign || 'left'};
-        line-height: 1.5;
-        white-space: pre-wrap;
-        word-wrap: break-word;
-        max-width: 90%;
-      }
-      
+    // Generate styles
+    const styles = `
       ${backgroundStyles}
     `;
 
-    // Generate HTML content
+    // Generate HTML content using the static method
+    const textElement = TextSceneRenderer.generateTextElement(text, style, position, width, height);
     const content = `
       <div class="scene-background"></div>
-      <div class="text-container" style="${position.x !== 'center' ? `padding-left: ${textX}px;` : ''} ${position.y !== 'center' ? `padding-top: ${textY}px;` : ''}">
-        <div class="text">${this.escapeHtml(text)}</div>
-      </div>
+      ${textElement}
     `;
 
     const puppeteer = PuppeteerService.getInstance();
-    return puppeteer.generateHTML(content, textStyles);
+    return puppeteer.generateHTML(content, styles);
   }
 
   /**
@@ -189,17 +240,4 @@ export class TextSceneRenderer extends BaseScene<TextScene> {
     `;
   }
 
-  /**
-   * Escape HTML special characters
-   */
-  private escapeHtml(text: string): string {
-    const map: Record<string, string> = {
-      '&': '&amp;',
-      '<': '&lt;',
-      '>': '&gt;',
-      '"': '&quot;',
-      "'": '&#39;',
-    };
-    return text.replace(/[&<>"']/g, (m) => map[m] || m);
-  }
 }
