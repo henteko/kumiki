@@ -1,8 +1,8 @@
 import { existsSync } from 'node:fs';
-import fs from 'node:fs/promises';
 import path from 'node:path';
 
 import { BaseScene } from './base.js';
+import { ImageSceneRenderer } from './image.js';
 import { TextSceneRenderer } from './text.js';
 
 import { FFmpegService } from '@/services/ffmpeg.js';
@@ -134,85 +134,17 @@ export class CompositeSceneRenderer extends BaseScene<CompositeScene> {
   private async renderImageLayer(layer: Layer & { type: 'image' }): Promise<string> {
     const { content, zIndex = 0, opacity = 1 } = layer;
     const { src, fit, position } = content;
+    const { width, height } = this.parseResolution();
     
-    // Read and encode image
-    const imagePath = path.resolve(process.cwd(), src);
-    const imageData = await fs.readFile(imagePath);
-    const base64 = imageData.toString('base64');
-    const mimeType = this.getMimeType(imagePath);
-    const dataUri = `data:${mimeType};base64,${base64}`;
+    // Use ImageSceneRenderer's static method to generate image element
+    const imageElement = await ImageSceneRenderer.generateImageElement(src, fit, position, width, height);
     
-    // Build position styles
-    const positionStyles = [];
-    positionStyles.push('position: absolute');
-    
-    if (position.x === 'center') {
-      positionStyles.push('left: 50%', 'transform: translateX(-50%)');
-    } else {
-      positionStyles.push(`left: ${position.x}px`);
-    }
-    
-    if (position.y === 'center') {
-      positionStyles.push('top: 50%');
-      if (position.x === 'center') {
-        // Replace the transform to handle both X and Y
-        positionStyles[positionStyles.indexOf('transform: translateX(-50%)')] = 'transform: translate(-50%, -50%)';
-      } else {
-        positionStyles.push('transform: translateY(-50%)');
-      }
-    } else {
-      positionStyles.push(`top: ${position.y}px`);
-    }
-    
-    const fitStyles = this.getFitStyles(fit);
-    
+    // Wrap with layer div and apply opacity
     return `
-      <div class="layer" style="z-index: ${zIndex};">
-        <img 
-          src="${dataUri}" 
-          style="${positionStyles.join('; ')}; ${fitStyles} opacity: ${opacity};"
-          alt=""
-        />
+      <div class="layer" style="z-index: ${zIndex}; opacity: ${opacity};">
+        ${imageElement}
       </div>
     `;
-  }
-
-
-  /**
-   * Get fit styles for images
-   */
-  private getFitStyles(fit: 'cover' | 'contain' | 'fill'): string {
-    switch (fit) {
-      case 'cover':
-        return 'width: 100%; height: 100%; object-fit: cover;';
-      case 'contain':
-        return 'max-width: 100%; max-height: 100%; object-fit: contain;';
-      case 'fill':
-        return 'width: 100%; height: 100%; object-fit: fill;';
-      default:
-        return '';
-    }
-  }
-
-
-  /**
-   * Get MIME type from file extension
-   */
-  private getMimeType(filePath: string): string {
-    const ext = path.extname(filePath).toLowerCase();
-    switch (ext) {
-      case '.jpg':
-      case '.jpeg':
-        return 'image/jpeg';
-      case '.png':
-        return 'image/png';
-      case '.gif':
-        return 'image/gif';
-      case '.webp':
-        return 'image/webp';
-      default:
-        return 'image/png';
-    }
   }
 
   /**
