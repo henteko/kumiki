@@ -1,0 +1,171 @@
+{
+  "version": "1.0",
+  "name": "Composite Scene Demo",
+  "settings": {
+    "resolution": "1920x1080",
+    "fps": 30
+  },
+  "scenes": [
+    {
+      "id": "title_scene",
+      "type": "composite",
+      "duration": 5,
+      "background": {
+        "type": "gradient",
+        "value": "linear-gradient(135deg, #1e3c72 0%, #2a5298 100%)"
+      },
+      "layers": [
+        {
+          "type": "image",
+          "content": {
+            "src": "examples/assets/sample-image.png",
+            "fit": "cover",
+            "position": {
+              "x": "center",
+              "y": "center"
+            }
+          },
+          "zIndex": 1,
+          "opacity": 0.3
+        },
+        {
+          "type": "text",
+          "content": {
+            "text": "Composite Scene Demo",
+            "style": {
+              "fontSize": 96,
+              "color": "#FFFFFF",
+              "fontFamily": "Arial",
+              "fontWeight": "bold",
+              "textAlign": "center"
+            },
+            "position": {
+              "x": "center",
+              "y": 200
+            }
+          },
+          "zIndex": 2,
+          "opacity": 1
+        },
+        {
+          "type": "text",
+          "content": {
+            "text": "Text and Image Layers Combined",
+            "style": {
+              "fontSize": 48,
+              "color": "#FFD700",
+              "fontFamily": "Arial",
+              "textAlign": "center"
+            },
+            "position": {
+              "x": "center",
+              "y": 350
+            }
+          },
+          "zIndex": 3,
+          "opacity": 0.9
+        }
+      ],
+      "transition": {
+        "type": "fade",
+        "duration": 1.0
+      }
+    },
+    {
+      "id": "overlay_demo",
+      "type": "composite",
+      "duration": 5,
+      "background": {
+        "type": "color",
+        "value": "#000000"
+      },
+      "layers": [
+        {
+          "type": "image",
+          "content": {
+            "src": "examples/assets/sample-image.png",
+            "fit": "contain",
+            "position": {
+              "x": "center",
+              "y": "center"
+            }
+          },
+          "zIndex": 1,
+          "opacity": 1
+        },
+        {
+          "type": "text",
+          "content": {
+            "text": "Overlay Text\non Image",
+            "style": {
+              "fontSize": 72,
+              "color": "#FFFFFF",
+              "fontFamily": "Arial",
+              "fontWeight": "bold",
+              "textAlign": "center"
+            },
+            "position": {
+              "x": "center",
+              "y": "center"
+            }
+          },
+          "zIndex": 10,
+          "opacity": 0.8
+        }
+      ],
+      "transition": {
+        "type": "wipe",
+        "duration": 1.0,
+        "direction": "left"
+      }
+    },
+    {
+      "id": "credits",
+      "type": "composite",
+      "duration": 4,
+      "background": {
+        "type": "gradient",
+        "value": "linear-gradient(45deg, #FF6B6B 0%, #4ECDC4 100%)"
+      },
+      "layers": [
+        {
+          "type": "text",
+          "content": {
+            "text": "Created with Kumiki",
+            "style": {
+              "fontSize": 64,
+              "color": "#FFFFFF",
+              "fontFamily": "Arial",
+              "fontWeight": "bold",
+              "textAlign": "center"
+            },
+            "position": {
+              "x": "center",
+              "y": 400
+            }
+          },
+          "zIndex": 1,
+          "opacity": 1
+        },
+        {
+          "type": "text",
+          "content": {
+            "text": "Composite Scene Type",
+            "style": {
+              "fontSize": 48,
+              "color": "#333333",
+              "fontFamily": "Arial",
+              "textAlign": "center"
+            },
+            "position": {
+              "x": "center",
+              "y": 500
+            }
+          },
+          "zIndex": 2,
+          "opacity": 0.8
+        }
+      ]
+    }
+  ]
+}

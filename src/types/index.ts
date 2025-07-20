@@ -12,13 +12,12 @@ export interface ProjectSettings {
   duration?: number | null;
 }
 
-export type Scene = TextScene | ImageScene | VideoScene;
+export type Scene = TextScene | ImageScene | VideoScene | CompositeScene;
 
 export interface BaseScene {
   id: string;
   duration: number;
   background?: Background;
-  animation?: Animation;
   transition?: Transition;
 }
 
@@ -35,6 +34,11 @@ export interface ImageScene extends BaseScene {
 export interface VideoScene extends BaseScene {
   type: 'video';
   content: VideoContent;
+}
+
+export interface CompositeScene extends BaseScene {
+  type: 'composite';
+  layers: Layer[];
 }
 
 export interface TextContent {
@@ -70,18 +74,25 @@ export interface Position {
   y: number | 'center';
 }
 
+export type Layer = TextLayer | ImageLayer;
+
+export interface TextLayer {
+  type: 'text';
+  content: TextContent;
+  zIndex?: number;
+  opacity?: number;
+}
+
+export interface ImageLayer {
+  type: 'image';
+  content: ImageContent;
+  zIndex?: number;
+  opacity?: number;
+}
+
 export interface Background {
   type: 'color' | 'image' | 'gradient';
   value: string;
-}
-
-export interface Animation {
-  type: 'fade-in' | 'fade-out' | 'zoom-in' | 'zoom-out' | 'slide';
-  duration: number;
-  easing?: 'linear' | 'ease-in' | 'ease-out' | 'ease-in-out';
-  from?: number;
-  to?: number;
-  direction?: 'left' | 'right' | 'up' | 'down';
 }
 
 export interface Transition {

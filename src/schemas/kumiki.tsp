@@ -24,6 +24,7 @@ union Scene {
   text: TextScene,
   image: ImageScene,
   video: VideoScene,
+  composite: CompositeScene,
 }
 
 model BaseScene {
@@ -49,6 +50,11 @@ model ImageScene extends BaseScene {
 model VideoScene extends BaseScene {
   type: "video";
   content: VideoContent;
+}
+
+model CompositeScene extends BaseScene {
+  type: "composite";
+  layers: Layer[];
 }
 
 model TextContent {
@@ -91,6 +97,27 @@ model VideoTrim {
 model Position {
   x: int32 | "center";
   y: int32 | "center";
+}
+
+union Layer {
+  text: TextLayer,
+  image: ImageLayer,
+}
+
+model TextLayer {
+  type: "text";
+  content: TextContent;
+  @minValue(0)
+  zIndex?: int32;
+  opacity?: float64;
+}
+
+model ImageLayer {
+  type: "image";
+  content: ImageContent;
+  @minValue(0)
+  zIndex?: int32;
+  opacity?: float64;
 }
 
 model Background {
