@@ -1,0 +1,96 @@
+{
+  "version": "1.0",
+  "name": "Audio Fade Test",
+  "settings": {
+    "resolution": "1920x1080",
+    "fps": 30
+  },
+  "scenes": [
+    {
+      "id": "scene1",
+      "type": "text",
+      "duration": 5,
+      "content": {
+        "text": "Audio Fade In Test\n(Listen to the music)",
+        "style": {
+          "fontSize": 72,
+          "color": "#FFFFFF",
+          "fontFamily": "Arial",
+          "fontWeight": "bold",
+          "textAlign": "center"
+        },
+        "position": {
+          "x": "center",
+          "y": "center"
+        }
+      },
+      "background": {
+        "type": "gradient",
+        "value": "linear-gradient(135deg, #1e3c72 0%, #2a5298 100%)"
+      },
+      "transition": {
+        "type": "fade",
+        "duration": 1.0
+      }
+    },
+    {
+      "id": "scene2",
+      "type": "text",
+      "duration": 5,
+      "content": {
+        "text": "Music Playing at Full Volume",
+        "style": {
+          "fontSize": 72,
+          "color": "#FFFFFF",
+          "fontFamily": "Arial",
+          "fontWeight": "bold",
+          "textAlign": "center"
+        },
+        "position": {
+          "x": "center",
+          "y": "center"
+        }
+      },
+      "background": {
+        "type": "gradient",
+        "value": "linear-gradient(135deg, #f093fb 0%, #f5576c 100%)"
+      },
+      "transition": {
+        "type": "wipe",
+        "duration": 1.0,
+        "direction": "right"
+      }
+    },
+    {
+      "id": "scene3",
+      "type": "text",
+      "duration": 5,
+      "content": {
+        "text": "Audio Fade Out Test\n(Music will fade out)",
+        "style": {
+          "fontSize": 72,
+          "color": "#FFFFFF",
+          "fontFamily": "Arial",
+          "fontWeight": "bold",
+          "textAlign": "center"
+        },
+        "position": {
+          "x": "center",
+          "y": "center"
+        }
+      },
+      "background": {
+        "type": "gradient",
+        "value": "linear-gradient(135deg, #fa709a 0%, #fee140 100%)"
+      }
+    }
+  ],
+  "audio": {
+    "backgroundMusic": {
+      "src": "examples/assets/background-music.mp3",
+      "volume": 0.7,
+      "fadeIn": 3.0,
+      "fadeOut": 3.0
+    }
+  }
+}

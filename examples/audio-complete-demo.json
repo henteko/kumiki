@@ -1,0 +1,133 @@
+{
+  "version": "1.0",
+  "name": "Complete Audio Features Demo",
+  "settings": {
+    "resolution": "1920x1080",
+    "fps": 30
+  },
+  "scenes": [
+    {
+      "id": "intro",
+      "type": "text",
+      "duration": 3,
+      "content": {
+        "text": "🎵 Audio Features Demo\nFade In: 2 seconds",
+        "style": {
+          "fontSize": 64,
+          "color": "#FFFFFF",
+          "fontFamily": "Arial",
+          "fontWeight": "bold",
+          "textAlign": "center"
+        },
+        "position": {
+          "x": "center",
+          "y": "center"
+        }
+      },
+      "background": {
+        "type": "gradient",
+        "value": "linear-gradient(45deg, #FC466B 0%, #3F5EFB 100%)"
+      },
+      "transition": {
+        "type": "fade",
+        "duration": 0.5
+      }
+    },
+    {
+      "id": "image_with_music",
+      "type": "image",
+      "duration": 4,
+      "content": {
+        "src": "examples/assets/sample-image.png",
+        "fit": "contain",
+        "position": {
+          "x": "center",
+          "y": "center"
+        }
+      },
+      "background": {
+        "type": "color",
+        "value": "#1a1a1a"
+      },
+      "transition": {
+        "type": "wipe",
+        "duration": 1.0,
+        "direction": "left"
+      }
+    },
+    {
+      "id": "video_scene",
+      "type": "video",
+      "duration": 3,
+      "content": {
+        "src": "examples/assets/test-video.mp4",
+        "trim": {
+          "start": 0,
+          "end": 3
+        }
+      },
+      "transition": {
+        "type": "dissolve",
+        "duration": 1.0
+      }
+    },
+    {
+      "id": "fade_out_notice",
+      "type": "text",
+      "duration": 4,
+      "content": {
+        "text": "🎵 Music Fading Out\nLast 2 seconds",
+        "style": {
+          "fontSize": 64,
+          "color": "#FFFFFF",
+          "fontFamily": "Arial",
+          "fontWeight": "bold",
+          "textAlign": "center"
+        },
+        "position": {
+          "x": "center",
+          "y": "center"
+        }
+      },
+      "background": {
+        "type": "gradient",
+        "value": "linear-gradient(135deg, #FDBB2D 0%, #22C1C3 100%)"
+      },
+      "transition": {
+        "type": "wipe",
+        "duration": 1.0,
+        "direction": "up"
+      }
+    },
+    {
+      "id": "outro",
+      "type": "text",
+      "duration": 2,
+      "content": {
+        "text": "End",
+        "style": {
+          "fontSize": 96,
+          "color": "#FFFFFF",
+          "fontFamily": "Arial",
+          "fontWeight": "bold"
+        },
+        "position": {
+          "x": "center",
+          "y": "center"
+        }
+      },
+      "background": {
+        "type": "color",
+        "value": "#000000"
+      }
+    }
+  ],
+  "audio": {
+    "backgroundMusic": {
+      "src": "examples/assets/background-music.mp3",
+      "volume": 0.6,
+      "fadeIn": 2.0,
+      "fadeOut": 2.0
+    }
+  }
+}

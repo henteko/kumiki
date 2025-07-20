@@ -211,18 +211,34 @@ export class Renderer {
   private async addBackgroundMusic(): Promise<void> {
     const musicPath = path.resolve(process.cwd(), this.project.audio!.backgroundMusic!.src);
     const tempVideo = path.join(this.tempDir, 'combined.mp4');
+    const bgMusic = this.project.audio!.backgroundMusic!;
     
     logger.info('Adding background music', {
       music: musicPath,
-      volume: this.project.audio!.backgroundMusic!.volume,
+      volume: bgMusic.volume,
+      fadeIn: bgMusic.fadeIn,
+      fadeOut: bgMusic.fadeOut,
     });
 
-    await this.ffmpeg.addAudio(
-      tempVideo,
-      musicPath,
-      this.options.outputPath,
-      this.project.audio!.backgroundMusic!.volume,
-    );
+    // Use the new method with fade support if fade values are provided
+    if (bgMusic.fadeIn || bgMusic.fadeOut) {
+      await this.ffmpeg.addAudioWithFade(
+        tempVideo,
+        musicPath,
+        this.options.outputPath,
+        bgMusic.volume,
+        bgMusic.fadeIn,
+        bgMusic.fadeOut,
+      );
+    } else {
+      // Use the original method for backward compatibility
+      await this.ffmpeg.addAudio(
+        tempVideo,
+        musicPath,
+        this.options.outputPath,
+        bgMusic.volume,
+      );
+    }
 
     if (this.options.onProgress) {
       this.options.onProgress(100);

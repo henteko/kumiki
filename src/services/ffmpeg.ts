@@ -408,6 +408,71 @@ export class FFmpegService {
   }
 
   /**
+   * Add audio to video with fade in/out effects
+   */
+  async addAudioWithFade(
+    videoPath: string, 
+    audioPath: string, 
+    outputPath: string, 
+    volume = 1.0,
+    fadeIn?: number,
+    fadeOut?: number
+  ): Promise<void> {
+    if (!existsSync(videoPath)) {
+      throw new ProcessError(
+        `Video file not found: ${videoPath}`,
+        'VIDEO_NOT_FOUND',
+      );
+    }
+
+    if (!existsSync(audioPath)) {
+      throw new ProcessError(
+        `Audio file not found: ${audioPath}`,
+        'AUDIO_NOT_FOUND',
+      );
+    }
+
+    await this.ensureOutputDirectory(outputPath);
+
+    // Get video duration to calculate fade out timing
+    const videoDuration = await this.getVideoDuration(videoPath);
+    
+    // Build audio filter chain
+    let audioFilter = `volume=${volume}`;
+    
+    if (fadeIn && fadeIn > 0) {
+      audioFilter = `afade=t=in:st=0:d=${fadeIn},${audioFilter}`;
+    }
+    
+    if (fadeOut && fadeOut > 0) {
+      const fadeOutStart = Math.max(0, videoDuration - fadeOut);
+      audioFilter = `${audioFilter},afade=t=out:st=${fadeOutStart}:d=${fadeOut}`;
+    }
+
+    const args = [
+      '-i', videoPath,
+      '-i', audioPath,
+      '-c:v', 'copy',
+      '-c:a', 'aac',
+      '-filter:a', audioFilter,
+      '-shortest',
+      '-y',
+      outputPath,
+    ];
+
+    logger.info('Adding audio with fade effects', { 
+      video: videoPath, 
+      audio: audioPath,
+      fadeIn,
+      fadeOut,
+      volume,
+      videoDuration
+    });
+
+    await this.execute('ffmpeg', args);
+  }
+
+  /**
    * Execute FFmpeg command
    */
   execute(
