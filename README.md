@@ -28,8 +28,11 @@ cd kumiki
 # 依存関係をインストール
 npm install
 
-# 開発モードで実行
-npm run dev
+# ビルドとグローバルインストール
+npm run build
+npm link
+
+kumiki --version
 ```
 
 ## 使い方

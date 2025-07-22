@@ -10,7 +10,7 @@
   },
   "scripts": {
     "dev": "npm run generate:schema && tsx src/cli.ts",
-    "build": "npm run generate:schema && tsc",
+    "build": "npm run generate:schema && tsc && tsc-alias",
     "clean": "rimraf dist",
     "lint": "eslint src --ext .ts",
     "lint:fix": "eslint src --ext .ts --fix",
@@ -55,6 +55,7 @@
     "eslint-plugin-import": "^2.32.0",
     "prettier": "^3.6.2",
     "rimraf": "^6.0.1",
+    "tsc-alias": "^1.8.16",
     "tsx": "^4.20.3",
     "typescript": "^5.8.3",
     "typespec-zod": "^0.0.0-52",
