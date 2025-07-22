@@ -1,0 +1,89 @@
+{
+  "version": "1.0",
+  "name": "Generated Image Test",
+  "settings": {
+    "resolution": "1920x1080",
+    "fps": 30
+  },
+  "scenes": [
+    {
+      "id": "scene-1",
+      "type": "text",
+      "duration": 2,
+      "content": {
+        "text": "AI Generated Images Demo",
+        "style": {
+          "fontSize": 48,
+          "color": "#ffffff",
+          "fontFamily": "sans-serif",
+          "fontWeight": "bold",
+          "textAlign": "center"
+        },
+        "position": { "x": "center", "y": "center" }
+      },
+      "background": {
+        "type": "color",
+        "value": "#2196F3"
+      },
+      "transition": {
+        "type": "fade",
+        "duration": 0.5
+      }
+    },
+    {
+      "id": "scene-2",
+      "type": "image",
+      "duration": 3,
+      "content": {
+        "src": "generate://A beautiful sunset over the ocean with orange and pink sky",
+        "fit": "cover",
+        "position": { "x": "center", "y": "center" }
+      },
+      "transition": {
+        "type": "fade",
+        "duration": 0.5
+      }
+    },
+    {
+      "id": "scene-3",
+      "type": "image",
+      "duration": 3,
+      "content": {
+        "src": {
+          "type": "generate",
+          "prompt": "A modern office interior with large windows and plants",
+          "style": "photorealistic",
+          "aspectRatio": "16:9"
+        },
+        "fit": "cover",
+        "position": { "x": "center", "y": "center" }
+      },
+      "transition": {
+        "type": "fade",
+        "duration": 0.5
+      }
+    },
+    {
+      "id": "scene-4",
+      "type": "image",
+      "duration": 3,
+      "content": {
+        "src": "examples/assets/sample-image.png",
+        "fit": "contain",
+        "position": { "x": "center", "y": "center" }
+      },
+      "background": {
+        "type": "color",
+        "value": "#f0f0f0"
+      }
+    }
+  ],
+  "audio": {
+    "backgroundMusic": {
+      "src": "examples/assets/background-music.mp3",
+      "volume": 0.7,
+      "fadeIn": 1,
+      "fadeOut": 2
+    }
+  }
+}

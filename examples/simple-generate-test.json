@@ -1,0 +1,20 @@
+{
+  "version": "1.0",
+  "name": "Simple Generate Test",
+  "settings": {
+    "resolution": "1920x1080",
+    "fps": 30
+  },
+  "scenes": [
+    {
+      "id": "scene-1",
+      "type": "image",
+      "duration": 3,
+      "content": {
+        "src": "examples/assets/sample-image.png",
+        "fit": "contain",
+        "position": { "x": "center", "y": "center" }
+      }
+    }
+  ]
+}

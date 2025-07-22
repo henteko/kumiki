@@ -10,6 +10,7 @@ import { logger } from '@/utils/logger.js';
 
 export function validateProject(data: unknown): ValidationResult {
   logger.info('Validating project structure');
+  logger.debug('Project data:', { data });
 
   try {
     const project = projectSchema.parse(data) as KumikiProject;
@@ -42,6 +43,15 @@ export function validateProject(data: unknown): ValidationResult {
       }));
       
       logger.error('Validation failed', { errorCount: errors.length });
+      errors.forEach(err => {
+        logger.error(`Validation error at ${err.path}: ${err.message}`);
+      });
+      
+      // Add more debug info
+      logger.debug('Zod error details:', { 
+        issues: error.issues,
+        formattedError: error.format()
+      });
       
       return {
         valid: false,
@@ -54,6 +64,7 @@ export function validateProject(data: unknown): ValidationResult {
 }
 
 function validateAdditionalRules(project: KumikiProject): ValidationErrorType[] {
+  logger.debug('Starting additional validations');
   const errors: ValidationErrorType[] = [];
   const projectDir = process.cwd();
   
@@ -72,14 +83,25 @@ function validateAdditionalRules(project: KumikiProject): ValidationErrorType[] 
   
   // Validate file references
   project.scenes.forEach((scene, index) => {
+    logger.debug(`Validating scene ${index}`, { type: scene.type });
     if (scene.type === 'image') {
-      const filePath = path.resolve(projectDir, scene.content.src);
-      if (!existsSync(filePath)) {
-        errors.push({
-          path: `scenes[${index}].content.src`,
-          message: `File not found: ${scene.content.src}`,
-          code: 'FILE_NOT_FOUND',
-        });
+      // Skip validation for generate URLs
+      const src = scene.content.src;
+      logger.debug(`Checking image src`, { src, typeOfSrc: typeof src });
+      // Check for generate URLs
+      if (typeof src === 'object' || (typeof src === 'string' && src.startsWith('generate://'))) {
+        logger.debug('Skipping validation for generate URL');
+        return; // Skip to next iteration
+      }
+      if (typeof src === 'string') {
+        const filePath = path.resolve(projectDir, src);
+        if (!existsSync(filePath)) {
+          errors.push({
+            path: `scenes[${index}].content.src`,
+            message: `File not found: ${src}`,
+            code: 'FILE_NOT_FOUND',
+          });
+        }
       }
     } else if (scene.type === 'video') {
       const filePath = path.resolve(projectDir, scene.content.src);

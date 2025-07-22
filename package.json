@@ -30,8 +30,10 @@
     "node": ">=18.0.0"
   },
   "dependencies": {
+    "@google/genai": "^1.10.0",
     "@inkjs/ui": "^2.0.0",
     "commander": "^14.0.0",
+    "dotenv": "^17.2.0",
     "ink": "^6.0.1",
     "p-queue": "^8.1.0",
     "puppeteer": "^24.14.0",

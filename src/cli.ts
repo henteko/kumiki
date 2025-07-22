@@ -5,11 +5,16 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 import { program } from 'commander';
+import dotenv from 'dotenv';
 
+import { cacheCommand } from '@/commands/cache.js';
 import { generateCommand } from '@/commands/generate.js';
 import { previewCommand } from '@/commands/preview.js';
 import { validateCommand } from '@/commands/validate.js';
 import { logger } from '@/utils/logger.js';
+
+// Load environment variables from .env file
+dotenv.config();
 
 
 const __filename = fileURLToPath(import.meta.url);
@@ -25,6 +30,7 @@ program
 program.addCommand(validateCommand);
 program.addCommand(previewCommand);
 program.addCommand(generateCommand);
+program.addCommand(cacheCommand);
 
 program.parse();
 

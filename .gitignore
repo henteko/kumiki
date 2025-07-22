@@ -50,3 +50,4 @@ output/
 !examples/**/*.png
 !examples/**/*.jpg
 !examples/**/*.jpeg
+.kumiki-cache/

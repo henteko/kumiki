@@ -4,9 +4,12 @@ import path from 'node:path';
 
 import { BaseScene } from '@/scenes/base.js';
 import { FFmpegService } from '@/services/ffmpeg.js';
+import { geminiImageService } from '@/services/gemini.js';
+import { imageCache, generateCacheKey } from '@/services/image-cache.js';
 import { PuppeteerService } from '@/services/puppeteer.js';
 import type { ImageScene } from '@/types/index.js';
 import { RenderError } from '@/utils/errors.js';
+import { isGenerateUrl, parseGenerateUrl } from '@/utils/generate-url-parser.js';
 import { logger } from '@/utils/logger.js';
 
 
@@ -21,11 +24,21 @@ export class ImageSceneRenderer extends BaseScene<ImageScene> {
     _width: number,
     _height: number
   ): Promise<string> {
-    // Get absolute image path
-    const imagePath = path.resolve(process.cwd(), src);
+    let imagePath: string;
+    let imageBuffer: Buffer;
     
-    // Read image as base64
-    const imageBuffer = await readFile(imagePath);
+    // Check if this is a generate URL
+    if (isGenerateUrl(src)) {
+      // This should have been resolved before calling this method
+      throw new Error('generate:// URLs should be resolved before rendering');
+    } else {
+      // Get absolute image path
+      imagePath = path.resolve(process.cwd(), src);
+      
+      // Read image as base64
+      imageBuffer = await readFile(imagePath);
+    }
+    
     const imageBase64 = imageBuffer.toString('base64');
     
     // Detect image format from file extension
@@ -117,13 +130,19 @@ export class ImageSceneRenderer extends BaseScene<ImageScene> {
       );
     }
 
+    // Skip file existence check for generate URLs
+    if (isGenerateUrl(this.scene.content.src)) {
+      return true;
+    }
+
     // Check if image file exists
-    const imagePath = path.resolve(process.cwd(), this.scene.content.src);
+    const src = this.scene.content.src;
+    const imagePath = path.resolve(process.cwd(), src as string);
     if (!existsSync(imagePath)) {
       throw new RenderError(
-        `Image file not found: ${this.scene.content.src}`,
+        `Image file not found: ${src as string}`,
         'IMAGE_NOT_FOUND',
-        { sceneId: this.scene.id, src: this.scene.content.src },
+        { sceneId: this.scene.id, src: src as string },
       );
     }
 
@@ -142,12 +161,20 @@ export class ImageSceneRenderer extends BaseScene<ImageScene> {
       src: this.scene.content.src,
     });
 
+    // Handle generate URLs
+    let actualSrc: string;
+    if (isGenerateUrl(this.scene.content.src)) {
+      actualSrc = await this.resolveGenerateUrl(this.scene.content.src);
+    } else {
+      actualSrc = this.scene.content.src as string;
+    }
+
     const { width, height } = this.parseResolution();
     const outputPath = this.getStaticOutputPath();
 
     // If no background and fit is 'fill', we can just copy the image
     if (!this.scene.background && this.scene.content.fit === 'fill') {
-      const imagePath = path.resolve(process.cwd(), this.scene.content.src);
+      const imagePath = path.resolve(process.cwd(), actualSrc);
       await copyFile(imagePath, outputPath);
       
       logger.info('Image scene rendered (direct copy)', {
@@ -159,7 +186,7 @@ export class ImageSceneRenderer extends BaseScene<ImageScene> {
     }
 
     // Otherwise, use Puppeteer to render with proper positioning and background
-    const html = await this.generateHTML(width, height);
+    const html = await this.generateHTML(width, height, actualSrc);
     const puppeteer = PuppeteerService.getInstance();
     await puppeteer.screenshot(html, {
       width,
@@ -212,9 +239,12 @@ export class ImageSceneRenderer extends BaseScene<ImageScene> {
   /**
    * Generate HTML for image scene
    */
-  private async generateHTML(width: number, height: number): Promise<string> {
+  private async generateHTML(width: number, height: number, actualSrc?: string): Promise<string> {
     const { src, fit, position } = this.scene.content;
     const background = this.scene.background;
+
+    // Use actual source if provided (for resolved generate URLs)
+    const imageSrc = actualSrc || (typeof src === 'string' ? src : '');
 
     // Generate background styles
     const backgroundStyles = this.getBackgroundStyles(background);
@@ -225,7 +255,7 @@ export class ImageSceneRenderer extends BaseScene<ImageScene> {
     `;
 
     // Use static method to generate image element
-    const imageElement = await ImageSceneRenderer.generateImageElement(src, fit, position, width, height);
+    const imageElement = await ImageSceneRenderer.generateImageElement(imageSrc, fit, position, width, height);
 
     // Generate HTML content
     const content = `
@@ -276,5 +306,70 @@ export class ImageSceneRenderer extends BaseScene<ImageScene> {
         background: ${backgroundValue};
       }
     `;
+  }
+
+  /**
+   * Resolve generate:// URL to actual image path
+   */
+  private async resolveGenerateUrl(src: string | object): Promise<string> {
+    // Initialize cache if needed
+    await imageCache.initialize();
+    
+    // Parse generate URL
+    const params = parseGenerateUrl(src);
+    
+    // Generate cache key
+    const cacheKey = generateCacheKey(params);
+    
+    // Check cache first
+    const cachedPath = await imageCache.get(cacheKey);
+    if (cachedPath) {
+      logger.info('Using cached generated image', {
+        sceneId: this.scene.id,
+        prompt: params.prompt,
+        cachedPath,
+      });
+      logger.info('To replace: Change src to your actual image path in the JSON file');
+      return cachedPath;
+    }
+    
+    // Generate new image
+    logger.info('Generating image for scene', {
+      sceneId: this.scene.id,
+      prompt: params.prompt,
+      style: params.style,
+      aspectRatio: params.aspectRatio,
+    });
+    
+    try {
+      const imageData = await geminiImageService.generateImage(params);
+      
+      // Save to cache
+      const imagePath = await imageCache.save(cacheKey, imageData, params);
+      
+      logger.info('Generated image saved', {
+        sceneId: this.scene.id,
+        prompt: params.prompt,
+        path: imagePath,
+      });
+      logger.info('To replace: Change src to your actual image path in the JSON file');
+      
+      return imagePath;
+    } catch (error) {
+      logger.error('Failed to generate image', {
+        sceneId: this.scene.id,
+        error: error instanceof Error ? error.message : String(error),
+        errorDetails: error,
+      });
+      throw new RenderError(
+        error instanceof Error ? error.message : 'Failed to generate image',
+        'IMAGE_GENERATION_FAILED',
+        {
+          sceneId: this.scene.id,
+          prompt: params.prompt,
+          error: error instanceof Error ? error.message : String(error),
+        }
+      );
+    }
   }
 }

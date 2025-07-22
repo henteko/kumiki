@@ -76,9 +76,17 @@ model TextStyle {
 }
 
 model ImageContent {
-  src: string;
+  src: string | GenerateImageSource;
   fit: "cover" | "contain" | "fill";
   position: Position;
+}
+
+model GenerateImageSource {
+  type: "generate";
+  prompt: string;
+  style?: "photorealistic" | "illustration" | "anime" | "sketch";
+  aspectRatio?: string;
+  seed?: int32;
 }
 
 model VideoContent {

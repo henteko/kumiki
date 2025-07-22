@@ -8,6 +8,7 @@ import { TextSceneRenderer } from './text.js';
 import { FFmpegService } from '@/services/ffmpeg.js';
 import { PuppeteerService } from '@/services/puppeteer.js';
 import type { CompositeScene, Layer } from '@/types/index.js';
+import { isGenerateUrl } from '@/utils/generate-url-parser.js';
 import { logger } from '@/utils/logger.js';
 
 export class CompositeSceneRenderer extends BaseScene<CompositeScene> {
@@ -136,8 +137,17 @@ export class CompositeSceneRenderer extends BaseScene<CompositeScene> {
     const { src, fit, position } = content;
     const { width, height } = this.parseResolution();
     
+    // Handle generate URLs
+    let actualSrc: string;
+    if (isGenerateUrl(src)) {
+      // For composite scenes, we need to resolve generate URLs first
+      throw new Error('generate:// URLs are not yet supported in composite scenes');
+    } else {
+      actualSrc = src as string;
+    }
+    
     // Use ImageSceneRenderer's static method to generate image element
-    const imageElement = await ImageSceneRenderer.generateImageElement(src, fit, position, width, height);
+    const imageElement = await ImageSceneRenderer.generateImageElement(actualSrc, fit, position, width, height);
     
     // Wrap with layer div and apply opacity
     return `
@@ -207,7 +217,12 @@ export class CompositeSceneRenderer extends BaseScene<CompositeScene> {
 
     for (const layer of this.scene.layers) {
       if (layer.type === 'image') {
-        const imagePath = path.resolve(process.cwd(), layer.content.src);
+        const src = layer.content.src;
+        // Skip validation for generate URLs
+        if (isGenerateUrl(src)) {
+          continue;
+        }
+        const imagePath = path.resolve(process.cwd(), src as string);
         if (!existsSync(imagePath)) {
           logger.error('Image file not found', {
             sceneId: this.scene.id,

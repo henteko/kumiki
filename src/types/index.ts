@@ -56,9 +56,17 @@ export interface TextStyle {
 }
 
 export interface ImageContent {
-  src: string;
+  src: string | GenerateImageSource;
   fit: 'cover' | 'contain' | 'fill';
   position: Position;
+}
+
+export interface GenerateImageSource {
+  type: 'generate';
+  prompt: string;
+  style?: 'photorealistic' | 'illustration' | 'anime' | 'sketch';
+  aspectRatio?: string;
+  seed?: number;
 }
 
 export interface VideoContent {
