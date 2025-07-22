@@ -10,6 +10,7 @@ export interface ProjectSettings {
   resolution: string;
   fps: number;
   duration?: number | null;
+  narrationDefaults?: NarrationDefaults;
 }
 
 export type Scene = TextScene | ImageScene | VideoScene | CompositeScene;
@@ -19,6 +20,7 @@ export interface BaseScene {
   duration: number;
   background?: Background;
   transition?: Transition;
+  narration?: Narration;
 }
 
 export interface TextScene extends BaseScene {
@@ -142,4 +144,39 @@ export interface ValidationError {
   path: string;
   message: string;
   code: string;
+}
+
+export interface Narration {
+  text: string;
+  voice?: Voice;
+  timing?: NarrationTiming;
+}
+
+export interface Voice {
+  languageCode: string;
+  name: string;
+  speakingRate?: number;
+  pitch?: number;
+  volumeGainDb?: number;
+}
+
+export interface NarrationTiming {
+  delay?: number;
+  fadeIn?: number;
+  fadeOut?: number;
+}
+
+export interface NarrationDefaults {
+  voice?: Voice;
+  volumeMix?: VolumeMix;
+}
+
+export interface VolumeMix {
+  narration: number;
+  bgm: number;
+}
+
+export interface ProcessNarrationResult {
+  audioPath: string | null;
+  duration: number;
 }

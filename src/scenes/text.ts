@@ -73,13 +73,14 @@ export class TextSceneRenderer extends BaseScene<TextScene> {
     logger.info('Rendering text scene to video', {
       sceneId: this.scene.id,
       duration: this.scene.duration,
+      hasNarration: !!this.narrationPath,
     });
 
     // First render static image
     const imagePath = await this.renderStatic();
     
     // Convert image to video using FFmpeg
-    const videoPath = this.getVideoOutputPath();
+    let videoPath = this.getVideoOutputPath();
     const ffmpeg = FFmpegService.getInstance();
     
     await ffmpeg.imageToVideo({
@@ -89,6 +90,27 @@ export class TextSceneRenderer extends BaseScene<TextScene> {
       fps: this.options.fps,
       resolution: this.options.resolution,
     });
+
+    // Add narration if available
+    if (this.narrationPath && this.scene.narration) {
+      const narrationVideoPath = videoPath.replace('.mp4', '_narrated.mp4');
+      
+      await ffmpeg.addNarrationTrack(
+        videoPath,
+        this.narrationPath,
+        narrationVideoPath,
+        {
+          narrationVolume: this.scene.narration.voice?.volumeGainDb 
+            ? Math.pow(10, this.scene.narration.voice.volumeGainDb / 20)
+            : 0.8,
+          delay: this.scene.narration.timing?.delay || 0,
+          fadeIn: this.scene.narration.timing?.fadeIn || 0,
+          fadeOut: this.scene.narration.timing?.fadeOut || 0,
+        }
+      );
+      
+      videoPath = narrationVideoPath;
+    }
 
     logger.info('Text scene rendered to video', {
       sceneId: this.scene.id,

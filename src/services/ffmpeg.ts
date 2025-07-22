@@ -408,6 +408,183 @@ export class FFmpegService {
   }
 
   /**
+   * Mix background music with existing audio (e.g., narration)
+   */
+  async mixBackgroundMusic(
+    videoPath: string,
+    musicPath: string,
+    outputPath: string,
+    options: {
+      musicVolume?: number;
+      existingAudioVolume?: number;
+      fadeIn?: number;
+      fadeOut?: number;
+    } = {}
+  ): Promise<void> {
+    const {
+      musicVolume = 0.3,
+      existingAudioVolume = 1.0,
+      fadeIn = 0,
+      fadeOut = 0,
+    } = options;
+
+    if (!existsSync(videoPath)) {
+      throw new ProcessError(
+        `Video file not found: ${videoPath}`,
+        'VIDEO_NOT_FOUND',
+      );
+    }
+
+    if (!existsSync(musicPath)) {
+      throw new ProcessError(
+        `Music file not found: ${musicPath}`,
+        'MUSIC_NOT_FOUND',
+      );
+    }
+
+    await this.ensureOutputDirectory(outputPath);
+
+    // Get video duration for fade calculations
+    const videoDuration = await this.getVideoDuration(videoPath);
+    
+    // Build music filter with fade
+    let musicFilter = `volume=${musicVolume}`;
+    
+    if (fadeIn > 0) {
+      musicFilter = `afade=t=in:st=0:d=${fadeIn},${musicFilter}`;
+    }
+    
+    if (fadeOut > 0) {
+      const fadeOutStart = Math.max(0, videoDuration - fadeOut);
+      musicFilter = `${musicFilter},afade=t=out:st=${fadeOutStart}:d=${fadeOut}`;
+    }
+
+    // Mix existing audio with background music
+    const args = [
+      '-i', videoPath,
+      '-i', musicPath,
+      '-filter_complex',
+      `[0:a]volume=${existingAudioVolume}[a0];[1:a]${musicFilter}[a1];[a0][a1]amix=inputs=2:duration=first[out]`,
+      '-map', '0:v',
+      '-map', '[out]',
+      '-c:v', 'copy',
+      '-c:a', 'aac',
+      '-y',
+      outputPath,
+    ];
+
+    logger.info('Mixing background music with existing audio', {
+      video: videoPath,
+      music: musicPath,
+      options,
+    });
+
+    await this.execute('ffmpeg', args);
+  }
+
+  /**
+   * Add narration track to video with existing audio
+   */
+  async addNarrationTrack(
+    videoPath: string,
+    narrationPath: string,
+    outputPath: string,
+    options: {
+      narrationVolume?: number;
+      bgmVolume?: number;
+      delay?: number;
+      fadeIn?: number;
+      fadeOut?: number;
+    } = {}
+  ): Promise<void> {
+    const {
+      narrationVolume = 0.8,
+      bgmVolume = 0.3,
+      delay = 0,
+      fadeIn = 0,
+      fadeOut = 0,
+    } = options;
+
+    if (!existsSync(videoPath)) {
+      throw new ProcessError(
+        `Video file not found: ${videoPath}`,
+        'VIDEO_NOT_FOUND',
+      );
+    }
+
+    if (!existsSync(narrationPath)) {
+      throw new ProcessError(
+        `Narration file not found: ${narrationPath}`,
+        'NARRATION_NOT_FOUND',
+      );
+    }
+
+    await this.ensureOutputDirectory(outputPath);
+
+    // Get video duration for fade calculations
+    const videoDuration = await this.getVideoDuration(videoPath);
+    
+    // Build narration filter with delay and fade
+    let narrationFilter = `adelay=${delay * 1000}|${delay * 1000}`;
+    
+    if (fadeIn > 0) {
+      narrationFilter = `${narrationFilter},afade=t=in:st=${delay}:d=${fadeIn}`;
+    }
+    
+    if (fadeOut > 0) {
+      const fadeOutStart = Math.max(0, videoDuration - fadeOut);
+      narrationFilter = `${narrationFilter},afade=t=out:st=${fadeOutStart}:d=${fadeOut}`;
+    }
+    
+    narrationFilter = `${narrationFilter},volume=${narrationVolume}`;
+
+    // Check if video has audio stream
+    const hasAudio = await this.hasAudioStream(videoPath);
+    
+    let args: string[];
+    
+    if (hasAudio) {
+      // Mix narration with existing audio
+      args = [
+        '-i', videoPath,
+        '-i', narrationPath,
+        '-filter_complex',
+        `[0:a]volume=${bgmVolume}[bgm];[1:a]${narrationFilter}[narr];[bgm][narr]amix=inputs=2:duration=first[out]`,
+        '-map', '0:v',
+        '-map', '[out]',
+        '-c:v', 'copy',
+        '-c:a', 'aac',
+        '-y',
+        outputPath,
+      ];
+    } else {
+      // Just add narration as the only audio track
+      args = [
+        '-i', videoPath,
+        '-i', narrationPath,
+        '-filter_complex',
+        `[1:a]${narrationFilter}[out]`,
+        '-map', '0:v',
+        '-map', '[out]',
+        '-c:v', 'copy',
+        '-c:a', 'aac',
+        '-shortest',
+        '-y',
+        outputPath,
+      ];
+    }
+
+    logger.info('Adding narration track', {
+      video: videoPath,
+      narration: narrationPath,
+      hasExistingAudio: hasAudio,
+      options,
+    });
+
+    await this.execute('ffmpeg', args);
+  }
+
+  /**
    * Add audio to video with fade in/out effects
    */
   async addAudioWithFade(
@@ -542,7 +719,7 @@ export class FFmpegService {
   /**
    * Check if video has audio stream
    */
-  private async hasAudioStream(videoPath: string): Promise<boolean> {
+  async hasAudioStream(videoPath: string): Promise<boolean> {
     return new Promise((resolve) => {
       const args = [
         '-i', videoPath,

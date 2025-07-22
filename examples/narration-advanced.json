@@ -1,0 +1,190 @@
+{
+  "version": "1.0.0",
+  "name": "Advanced Narration Example",
+  "settings": {
+    "resolution": "1920x1080",
+    "fps": 30
+  },
+  "scenes": [
+    {
+      "id": "english-intro",
+      "type": "text",
+      "duration": 6,
+      "content": {
+        "text": "Multilingual Support",
+        "style": {
+          "fontSize": 60,
+          "color": "#FFFFFF",
+          "fontFamily": "Arial"
+        },
+        "position": {
+          "x": "center",
+          "y": "center"
+        }
+      },
+      "background": {
+        "type": "gradient",
+        "value": "linear-gradient(120deg, #3494E6 0%, #EC6EAD 100%)"
+      },
+      "narration": {
+        "text": "Welcome to Kumiki. This tool supports multiple languages for narration.",
+        "voice": {
+          "languageCode": "en-US",
+          "name": "Puck",
+          "speakingRate": 1.0
+        }
+      }
+    },
+    {
+      "id": "japanese-features",
+      "type": "composite",
+      "duration": 8,
+      "background": {
+        "type": "gradient",
+        "value": "linear-gradient(to top, #fbc2eb 0%, #a6c1ee 100%)"
+      },
+      "layers": [
+        {
+          "type": "text",
+          "content": {
+            "text": "日本語ナレーション",
+            "style": {
+              "fontSize": 48,
+              "color": "#2D3748",
+              "fontFamily": "Arial",
+              "fontWeight": "bold"
+            },
+            "position": {
+              "x": "center",
+              "y": 350
+            }
+          },
+          "zIndex": 2
+        },
+        {
+          "type": "text",
+          "content": {
+            "text": "24言語に対応",
+            "style": {
+              "fontSize": 36,
+              "color": "#4A5568",
+              "fontFamily": "Arial"
+            },
+            "position": {
+              "x": "center",
+              "y": 450
+            }
+          },
+          "zIndex": 1
+        }
+      ],
+      "narration": {
+        "text": "日本語でのナレーションもお任せください。自然で聞き取りやすい音声を生成します。声の種類も豊富に用意されています。",
+        "voice": {
+          "languageCode": "ja-JP",
+          "name": "Leda",
+          "speakingRate": 1.1,
+          "pitch": 2
+        },
+        "timing": {
+          "delay": 0.5,
+          "fadeIn": 0.5
+        }
+      }
+    },
+    {
+      "id": "speed-variation",
+      "type": "text",
+      "duration": 10,
+      "content": {
+        "text": "話速の調整",
+        "style": {
+          "fontSize": 52,
+          "color": "#FFFFFF",
+          "fontFamily": "Arial"
+        },
+        "position": {
+          "x": "center",
+          "y": "center"
+        }
+      },
+      "background": {
+        "type": "color",
+        "value": "#1A202C"
+      },
+      "narration": {
+        "text": "このナレーションはゆっくりとした速度で読み上げられています。教育コンテンツや説明動画では、聞き手が理解しやすいように話速を調整することが重要です。",
+        "voice": {
+          "languageCode": "ja-JP",
+          "name": "Kore",
+          "speakingRate": 0.75,
+          "pitch": 0,
+          "volumeGainDb": 2
+        }
+      }
+    },
+    {
+      "id": "voice-emotions",
+      "type": "composite",
+      "duration": 7,
+      "background": {
+        "type": "gradient",
+        "value": "linear-gradient(to right, #f78ca0 0%, #f9748f 19%, #fd868c 60%, #fe9a8b 100%)"
+      },
+      "layers": [
+        {
+          "type": "text",
+          "content": {
+            "text": "感情豊かな音声",
+            "style": {
+              "fontSize": 56,
+              "color": "#FFFFFF",
+              "fontFamily": "Arial",
+              "fontWeight": "bold"
+            },
+            "position": {
+              "x": "center",
+              "y": 300
+            }
+          },
+          "opacity": 0.95
+        },
+        {
+          "type": "text",
+          "content": {
+            "text": "明るく元気な声で！",
+            "style": {
+              "fontSize": 36,
+              "color": "#FFF5F5",
+              "fontFamily": "Arial"
+            },
+            "position": {
+              "x": "center",
+              "y": 420
+            }
+          },
+          "opacity": 0.8
+        }
+      ],
+      "narration": {
+        "text": "こんにちは！今日は素晴らしい一日ですね！Kumikiを使えば、こんなに明るく楽しい動画が簡単に作れちゃいます！",
+        "voice": {
+          "languageCode": "ja-JP",
+          "name": "Leda",
+          "speakingRate": 1.2,
+          "pitch": 5,
+          "volumeGainDb": 3
+        },
+        "timing": {
+          "delay": 0.3,
+          "fadeIn": 0.2,
+          "fadeOut": 0.5
+        }
+      },
+      "transition": {
+        "type": "dissolve",
+        "duration": 1.0
+      }
+    }
+  ]
+}

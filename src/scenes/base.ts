@@ -10,6 +10,7 @@ import { logger } from '@/utils/logger.js';
 export abstract class BaseScene<T extends Scene = Scene> {
   protected scene: T;
   protected options: SceneRenderOptions;
+  protected narrationPath?: string;
 
   constructor(scene: T, options: SceneRenderOptions) {
     this.scene = scene;
@@ -43,6 +44,20 @@ export abstract class BaseScene<T extends Scene = Scene> {
    */
   protected getVideoOutputPath(): string {
     return path.join(this.options.tempDir, `scene_${this.scene.id}.mp4`);
+  }
+  
+  /**
+   * Get the output path for narration audio
+   */
+  protected getNarrationOutputPath(): string {
+    return path.join(this.options.tempDir, `narration_${this.scene.id}.wav`);
+  }
+  
+  /**
+   * Set the narration audio path
+   */
+  setNarrationPath(path: string): void {
+    this.narrationPath = path;
   }
 
   /**

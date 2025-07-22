@@ -93,10 +93,11 @@ export class VideoSceneRenderer extends BaseScene<VideoScene> {
     logger.info('Processing video scene', {
       sceneId: this.scene.id,
       duration: this.scene.duration,
+      hasNarration: !!this.narrationPath,
     });
 
     const videoPath = path.resolve(process.cwd(), this.scene.content.src);
-    const outputPath = this.getVideoOutputPath();
+    let outputPath = this.getVideoOutputPath();
     const ffmpeg = FFmpegService.getInstance();
 
     if (this.scene.content.trim) {
@@ -121,9 +122,32 @@ export class VideoSceneRenderer extends BaseScene<VideoScene> {
       });
     }
 
+    // Add narration if available
+    if (this.narrationPath && this.scene.narration) {
+      const narrationVideoPath = outputPath.replace('.mp4', '_narrated.mp4');
+      
+      await ffmpeg.addNarrationTrack(
+        outputPath,
+        this.narrationPath,
+        narrationVideoPath,
+        {
+          narrationVolume: this.scene.narration.voice?.volumeGainDb 
+            ? Math.pow(10, this.scene.narration.voice.volumeGainDb / 20)
+            : 0.8,
+          bgmVolume: 0.3, // Lower existing video audio
+          delay: this.scene.narration.timing?.delay || 0,
+          fadeIn: this.scene.narration.timing?.fadeIn || 0,
+          fadeOut: this.scene.narration.timing?.fadeOut || 0,
+        }
+      );
+      
+      outputPath = narrationVideoPath;
+    }
+
     logger.info('Video scene processed', {
       sceneId: this.scene.id,
       outputPath,
+      hasNarration: !!this.narrationPath,
     });
 
     return outputPath;

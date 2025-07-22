@@ -7,8 +7,9 @@ import PQueue from 'p-queue';
 import { parseProjectFile } from '@/core/parser.js';
 import { SceneFactory } from '@/scenes/factory.js';
 import { FFmpegService } from '@/services/ffmpeg.js';
+import { narrationService } from '@/services/narration.js';
 import { TransitionService } from '@/services/transition.js';
-import type { KumikiProject } from '@/types/index.js';
+import type { KumikiProject, ProcessNarrationResult } from '@/types/index.js';
 import { ProcessError } from '@/utils/errors.js';
 import { logger } from '@/utils/logger.js';
 
@@ -26,6 +27,7 @@ export class Renderer {
   private options: RenderOptions;
   private tempDir: string;
   private ffmpeg: FFmpegService;
+  private narrationResults: Map<string, ProcessNarrationResult> = new Map();
 
   constructor(private projectPath: string, options: RenderOptions) {
     this.options = options;
@@ -67,6 +69,9 @@ export class Renderer {
         );
       }
       const fps = this.project.settings.fps;
+
+      // Process narrations for all scenes
+      await this.processNarrations();
 
       // Render all scenes to videos
       const scenePaths = await this.renderScenes({ width, height, fps });
@@ -115,6 +120,12 @@ export class Renderer {
           fps: settings.fps,
           tempDir: this.tempDir,
         });
+
+        // Set narration path if available
+        const narrationResult = this.narrationResults.get(scene.id);
+        if (narrationResult?.audioPath) {
+          renderer.setNarrationPath(narrationResult.audioPath);
+        }
 
         const videoPath = await renderer.renderVideo();
         scenePaths[index] = videoPath;
@@ -220,24 +231,47 @@ export class Renderer {
       fadeOut: bgMusic.fadeOut,
     });
 
-    // Use the new method with fade support if fade values are provided
-    if (bgMusic.fadeIn || bgMusic.fadeOut) {
-      await this.ffmpeg.addAudioWithFade(
+    // Check if video already has audio (from narration)
+    const hasAudio = await this.ffmpeg.hasAudioStream(tempVideo);
+    
+    if (hasAudio) {
+      // Mix background music with existing narration audio
+      const volumeMix = this.project.settings.narrationDefaults?.volumeMix || {
+        narration: 0.8,
+        bgm: 0.3
+      };
+      
+      await this.ffmpeg.mixBackgroundMusic(
         tempVideo,
         musicPath,
         this.options.outputPath,
-        bgMusic.volume,
-        bgMusic.fadeIn,
-        bgMusic.fadeOut,
+        {
+          musicVolume: bgMusic.volume || volumeMix.bgm,
+          existingAudioVolume: 1.0, // Keep narration at full volume
+          fadeIn: bgMusic.fadeIn,
+          fadeOut: bgMusic.fadeOut,
+        }
       );
     } else {
-      // Use the original method for backward compatibility
-      await this.ffmpeg.addAudio(
-        tempVideo,
-        musicPath,
-        this.options.outputPath,
-        bgMusic.volume,
-      );
+      // No existing audio, just add background music
+      if (bgMusic.fadeIn || bgMusic.fadeOut) {
+        await this.ffmpeg.addAudioWithFade(
+          tempVideo,
+          musicPath,
+          this.options.outputPath,
+          bgMusic.volume,
+          bgMusic.fadeIn,
+          bgMusic.fadeOut,
+        );
+      } else {
+        // Use the original method for backward compatibility
+        await this.ffmpeg.addAudio(
+          tempVideo,
+          musicPath,
+          this.options.outputPath,
+          bgMusic.volume,
+        );
+      }
     }
 
     if (this.options.onProgress) {
@@ -270,6 +304,38 @@ export class Renderer {
   private async ensureTempDirectory(): Promise<void> {
     if (!existsSync(this.tempDir)) {
       await mkdir(this.tempDir, { recursive: true });
+    }
+  }
+
+  /**
+   * Process narrations for all scenes
+   */
+  private async processNarrations(): Promise<void> {
+    const scenesWithNarration = this.project.scenes.filter(scene => scene.narration);
+    
+    if (scenesWithNarration.length === 0) {
+      logger.info('No narrations to process');
+      return;
+    }
+    
+    logger.info('Processing narrations', { count: scenesWithNarration.length });
+    
+    for (const scene of scenesWithNarration) {
+      try {
+        const result = await narrationService.processSceneNarration({
+          scene,
+          narrationDefaults: this.project.settings.narrationDefaults,
+          outputDir: this.tempDir,
+        });
+        
+        this.narrationResults.set(scene.id, result);
+      } catch (error) {
+        logger.error('Failed to process narration', {
+          sceneId: scene.id,
+          error: error instanceof Error ? error.message : String(error),
+        });
+        // Continue with other narrations
+      }
     }
   }
 

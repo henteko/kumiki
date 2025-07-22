@@ -1,0 +1,165 @@
+{
+  "version": "1.0.0",
+  "name": "Basic Narration Example",
+  "settings": {
+    "resolution": "1920x1080",
+    "fps": 30,
+    "narrationDefaults": {
+      "voice": {
+        "languageCode": "ja-JP",
+        "name": "Kore",
+        "speakingRate": 1.0
+      },
+      "volumeMix": {
+        "narration": 0.8,
+        "bgm": 0.3
+      }
+    }
+  },
+  "scenes": [
+    {
+      "id": "intro",
+      "type": "text",
+      "duration": 5,
+      "content": {
+        "text": "Kumiki",
+        "style": {
+          "fontSize": 72,
+          "color": "#FFFFFF",
+          "fontFamily": "Arial"
+        },
+        "position": {
+          "x": "center",
+          "y": "center"
+        }
+      },
+      "background": {
+        "type": "gradient",
+        "value": "linear-gradient(45deg, #667eea 0%, #764ba2 100%)"
+      },
+      "narration": {
+        "text": "Kumikiへようこそ。動画生成ツールの新しい世界を体験してください。"
+      }
+    },
+    {
+      "id": "features",
+      "type": "text",
+      "duration": 8,
+      "content": {
+        "text": "ナレーション機能",
+        "style": {
+          "fontSize": 48,
+          "color": "#FFFFFF",
+          "fontFamily": "Arial",
+          "fontWeight": "bold"
+        },
+        "position": {
+          "x": "center",
+          "y": "center"
+        }
+      },
+      "background": {
+        "type": "gradient",
+        "value": "linear-gradient(135deg, #f093fb 0%, #f5576c 100%)"
+      },
+      "narration": {
+        "text": "新しいナレーション機能により、各シーンに音声解説を追加できます。Google Gemini APIの高品質な音声合成技術を活用しています。",
+        "timing": {
+          "delay": 0.5,
+          "fadeIn": 0.3,
+          "fadeOut": 0.3
+        }
+      }
+    },
+    {
+      "id": "customization",
+      "type": "composite",
+      "duration": 6,
+      "background": {
+        "type": "color",
+        "value": "#2D3748"
+      },
+      "layers": [
+        {
+          "type": "text",
+          "content": {
+            "text": "カスタマイズ可能",
+            "style": {
+              "fontSize": 56,
+              "color": "#FFFFFF",
+              "fontFamily": "Arial"
+            },
+            "position": {
+              "x": "center",
+              "y": 300
+            }
+          }
+        },
+        {
+          "type": "text",
+          "content": {
+            "text": "声質・速度・ピッチを自由に調整",
+            "style": {
+              "fontSize": 32,
+              "color": "#CBD5E0",
+              "fontFamily": "Arial"
+            },
+            "position": {
+              "x": "center",
+              "y": 400
+            }
+          }
+        }
+      ],
+      "narration": {
+        "text": "音声の設定は細かくカスタマイズ可能です。話速を遅くしたり、ピッチを調整したりできます。",
+        "voice": {
+          "languageCode": "ja-JP",
+          "name": "Kore",
+          "speakingRate": 0.9,
+          "pitch": -2
+        }
+      }
+    },
+    {
+      "id": "conclusion",
+      "type": "text",
+      "duration": 5,
+      "content": {
+        "text": "今すぐ始めよう！",
+        "style": {
+          "fontSize": 64,
+          "color": "#FFFFFF",
+          "fontFamily": "Arial",
+          "fontWeight": "bold"
+        },
+        "position": {
+          "x": "center",
+          "y": "center"
+        }
+      },
+      "background": {
+        "type": "gradient",
+        "value": "linear-gradient(to right, #fa709a 0%, #fee140 100%)"
+      },
+      "narration": {
+        "text": "Kumikiのナレーション機能で、より魅力的な動画を作成しましょう。",
+        "timing": {
+          "delay": 0.5
+        }
+      },
+      "transition": {
+        "type": "fade",
+        "duration": 1.0
+      }
+    }
+  ],
+  "audio": {
+    "backgroundMusic": {
+      "src": "examples/assets/background-music.mp3",
+      "volume": 0.3,
+      "fadeIn": 2,
+      "fadeOut": 2
+    }
+  }
+}

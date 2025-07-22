@@ -182,9 +182,15 @@ export class CompositeSceneRenderer extends BaseScene<CompositeScene> {
    * Render to video
    */
   async renderVideo(): Promise<string> {
+    logger.info('Rendering composite scene to video', {
+      sceneId: this.scene.id,
+      duration: this.scene.duration,
+      hasNarration: !!this.narrationPath,
+    });
+
     // First render to static image
     const imagePath = await this.renderStatic();
-    const outputPath = this.getVideoOutputPath();
+    let outputPath = this.getVideoOutputPath();
 
     // Convert static image to video with specified duration
     const ffmpeg = FFmpegService.getInstance();
@@ -196,9 +202,31 @@ export class CompositeSceneRenderer extends BaseScene<CompositeScene> {
       resolution: this.options.resolution
     });
 
+    // Add narration if available
+    if (this.narrationPath && this.scene.narration) {
+      const narrationVideoPath = outputPath.replace('.mp4', '_narrated.mp4');
+      
+      await ffmpeg.addNarrationTrack(
+        outputPath,
+        this.narrationPath,
+        narrationVideoPath,
+        {
+          narrationVolume: this.scene.narration.voice?.volumeGainDb 
+            ? Math.pow(10, this.scene.narration.voice.volumeGainDb / 20)
+            : 0.8,
+          delay: this.scene.narration.timing?.delay || 0,
+          fadeIn: this.scene.narration.timing?.fadeIn || 0,
+          fadeOut: this.scene.narration.timing?.fadeOut || 0,
+        }
+      );
+      
+      outputPath = narrationVideoPath;
+    }
+
     logger.info('Composite scene rendered to video', {
       sceneId: this.scene.id,
       outputPath,
+      hasNarration: !!this.narrationPath,
     });
 
     return outputPath;

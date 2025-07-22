@@ -18,6 +18,7 @@ model ProjectSettings {
   fps: int32;
   
   duration?: int32 | null;
+  narrationDefaults?: NarrationDefaults;
 }
 
 union Scene {
@@ -35,6 +36,7 @@ model BaseScene {
   
   background?: Background;
   transition?: Transition;
+  narration?: Narration;
 }
 
 model TextScene extends BaseScene {
@@ -170,4 +172,53 @@ model SoundEffect {
   @minValue(0)
   @maxValue(1)
   volume: float64;
+}
+
+model Narration {
+  text: string;
+  voice?: Voice;
+  timing?: NarrationTiming;
+}
+
+model Voice {
+  languageCode: string;
+  name: string;
+  
+  @minValue(0.25)
+  @maxValue(4.0)
+  speakingRate?: float64 = 1.0;
+  
+  @minValue(-20.0)
+  @maxValue(20.0)
+  pitch?: float64 = 0;
+  
+  @minValue(-96.0)
+  @maxValue(16.0)
+  volumeGainDb?: float64 = 0;
+}
+
+model NarrationTiming {
+  @minValue(0)
+  delay?: float64 = 0;
+  
+  @minValue(0)
+  fadeIn?: float64 = 0;
+  
+  @minValue(0)
+  fadeOut?: float64 = 0;
+}
+
+model NarrationDefaults {
+  voice?: Voice;
+  volumeMix?: VolumeMix;
+}
+
+model VolumeMix {
+  @minValue(0)
+  @maxValue(1)
+  narration: float64 = 0.8;
+  
+  @minValue(0)
+  @maxValue(1)
+  bgm: float64 = 0.3;
 }
