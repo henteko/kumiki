@@ -138,18 +138,6 @@ function validateAdditionalRules(project: KumikiProject): ValidationErrorType[] 
     }
   }
   
-  if (project.audio?.soundEffects) {
-    project.audio.soundEffects.forEach((effect, index) => {
-      const filePath = path.resolve(projectDir, effect.src);
-      if (!existsSync(filePath)) {
-        errors.push({
-          path: `audio.soundEffects[${index}].src`,
-          message: `Sound effect file not found: ${effect.src}`,
-          code: 'FILE_NOT_FOUND',
-        });
-      }
-    });
-  }
   
   // Validate video trim times
   project.scenes.forEach((scene, index) => {

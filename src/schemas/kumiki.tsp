@@ -146,7 +146,6 @@ model Transition {
 
 model AudioSettings {
   backgroundMusic?: BackgroundMusic;
-  soundEffects?: SoundEffect[];
 }
 
 model BackgroundMusic {
@@ -163,16 +162,6 @@ model BackgroundMusic {
   fadeOut?: float64;
 }
 
-model SoundEffect {
-  src: string;
-  
-  @minValue(0)
-  startTime: float64;
-  
-  @minValue(0)
-  @maxValue(1)
-  volume: float64;
-}
 
 model Narration {
   text: string;

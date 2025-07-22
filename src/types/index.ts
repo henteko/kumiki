@@ -113,7 +113,6 @@ export interface Transition {
 
 export interface AudioSettings {
   backgroundMusic?: BackgroundMusic;
-  soundEffects?: SoundEffect[];
 }
 
 export interface BackgroundMusic {
@@ -121,12 +120,6 @@ export interface BackgroundMusic {
   volume: number;
   fadeIn?: number;
   fadeOut?: number;
-}
-
-export interface SoundEffect {
-  src: string;
-  startTime: number;
-  volume: number;
 }
 
 export interface SceneRenderOptions {
