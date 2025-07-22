@@ -4,6 +4,25 @@
 
 プロトタイプ動画制作時に、素材画像を用意せずともGemini APIを利用して画像を自動生成する機能を提供します。生成された画像はキャッシュされ、後から実際の画像に簡単に置き換えることができます。
 
+## 実装状況
+
+✅ **実装完了** - 2025年7月22日
+
+### 実装された機能
+- Gemini API（gemini-2.0-flash-preview-image-generation）を使用した画像生成
+- SHA-256ハッシュベースのキャッシュシステム
+- generate:// URLプレフィックスによる自動認識
+- オブジェクト形式での詳細設定サポート
+- キャッシュ管理コマンド（status, clear, size）
+- 遅延初期化による環境変数の確実な読み込み
+
+### 生成例
+実際に生成された画像の例：
+- 夕焼けの海: `.kumiki-cache/generated-images/a6dd21946ad39f5d.png` 
+  - プロンプト: "A beautiful sunset over the ocean with orange sky"
+- モダンなオフィス: `.kumiki-cache/generated-images/9da775ecc5ed2bc5.png`
+  - プロンプト: "Modern minimalist office interior with natural lighting"
+
 ## 背景と目的
 
 ### 課題
@@ -187,59 +206,88 @@ function generateCacheKey(params: CacheKey): string {
 
 ### 4. Gemini API統合
 
-#### 4.1 サービス実装
+#### 4.1 サービス実装（実装済み）
 ```typescript
 // src/services/gemini.ts
 export class GeminiImageService {
-  private client: GoogleGenerativeAI;
-  private cache: ImageCache;
+  private genAI: GoogleGenAI | null = null;
+  private initialized = false;
 
-  async generateImage(params: GenerateImageParams): Promise<string> {
-    // 1. キャッシュチェック
-    const cacheKey = generateCacheKey(params);
-    const cached = await this.cache.get(cacheKey);
-    if (cached) {
-      logger.info('Using cached image', { cacheKey, prompt: params.prompt });
-      return cached;
+  private initialize() {
+    if (this.initialized) return;
+    
+    const apiKey = process.env.GEMINI_API_KEY;
+    if (apiKey) {
+      this.genAI = new GoogleGenAI({
+        apiKey: apiKey,
+      });
     }
+    this.initialized = true;
+  }
 
-    // 2. API キーチェック
-    if (!process.env.GEMINI_API_KEY) {
+  async generateImage(params: GenerateImageParams): Promise<Buffer> {
+    this.initialize();
+    
+    if (!this.genAI) {
       throw new GeminiError('GEMINI_API_KEY environment variable is not set');
     }
 
-    // 3. Gemini APIコール
-    logger.info('Generating new image', { prompt: params.prompt });
-    const imageData = await this.callGeminiAPI(params);
-
-    // 4. キャッシュ保存
-    const imagePath = await this.cache.save(cacheKey, imageData, params);
+    const enhancedPrompt = this.enhancePrompt(params.prompt, params.style, params.aspectRatio);
     
-    return imagePath;
-  }
+    const response = await this.genAI.models.generateContent({
+      model: 'gemini-2.0-flash-preview-image-generation',
+      contents: enhancedPrompt,
+      config: {
+        responseModalities: [Modality.TEXT, Modality.IMAGE],
+      },
+    });
 
-  private async callGeminiAPI(params: GenerateImageParams): Promise<Buffer> {
-    // Gemini APIを使用して画像生成
-    // 詳細な実装は後日
+    // レスポンスから画像データを抽出
+    const imageData = this.extractImageFromResponse(response);
+    return imageData;
   }
 }
 ```
 
-#### 4.2 エラーハンドリング
+#### 4.2 キャッシュ統合（実装済み）
+```typescript
+// src/scenes/image.ts
+private async resolveGenerateUrl(src: string | object): Promise<string> {
+  await imageCache.initialize();
+  
+  const params = parseGenerateUrl(src);
+  const cacheKey = generateCacheKey(params);
+  
+  // キャッシュチェック
+  const cachedPath = await imageCache.get(cacheKey);
+  if (cachedPath) {
+    logger.info('Using cached generated image', {
+      sceneId: this.scene.id,
+      prompt: params.prompt,
+      cachedPath,
+    });
+    return cachedPath;
+  }
+  
+  // 新規生成
+  const imageData = await geminiImageService.generateImage(params);
+  const imagePath = await imageCache.save(cacheKey, imageData, params);
+  
+  logger.info('Generated image saved', {
+    sceneId: this.scene.id,
+    prompt: params.prompt,
+    path: imagePath,
+  });
+  
+  return imagePath;
+}
+```
+
+#### 4.3 エラーハンドリング（実装済み）
 ```typescript
 export class GeminiError extends KumikiError {
-  constructor(message: string, details?: any) {
+  constructor(message: string, details?: unknown) {
     super(message, 'GEMINI_ERROR', details);
-  }
-}
-
-// レート制限対応
-export class RateLimitHandler {
-  async executeWithRetry<T>(
-    fn: () => Promise<T>, 
-    maxRetries: number = 3
-  ): Promise<T> {
-    // 指数バックオフでリトライ
   }
 }
 ```
@@ -262,27 +310,26 @@ GEMINI_API_KEY=your-api-key
 - **デフォルトスタイル**: photorealistic
 - **デフォルトアスペクト比**: 16:9
 
-## 実装計画
+## 実装済み機能
 
-### フェーズ1: 基本機能（MVP）
-1. Gemini API統合
-2. 基本的な画像生成機能
-3. シンプルなファイルベースキャッシュ
+### ✅ フェーズ1: 基本機能（MVP）
+- Gemini API統合（@google/genai SDK使用）
+- 基本的な画像生成機能
+- シンプルなファイルベースキャッシュ
 
-### フェーズ2: キャッシュシステム
-1. 高度なキャッシュ管理
-2. キャッシュクリーンアップ
-3. 使用統計
+### ✅ フェーズ2: キャッシュシステム
+- キャッシュマニフェスト（manifest.json）
+- キャッシュクリーンアップ（--older-than オプション）
+- 使用統計（lastUsed, useCount）
 
-### フェーズ3: 開発支援機能
-1. 生成画像の使用状況ログ
-2. キャッシュ管理コマンド
-3. デバッグモード
+### ✅ フェーズ3: 開発支援機能
+- 生成画像の使用状況ログ
+- キャッシュ管理コマンド（cache status, cache clear, cache size）
 
-### フェーズ4: 高度な機能
-1. バッチ生成
-2. 画像バリエーション
-3. スタイル転送
+### 未実装機能（将来の拡張）
+- バッチ生成
+- 画像バリエーション（seed値のサポートは実装済み）
+- 他のAI画像生成サービスへの対応
 
 ## セキュリティとプライバシー
 
@@ -388,80 +435,80 @@ kumiki cache size
 
 この設計により、クリエイターはアイデアの具現化により集中でき、素材準備の手間を大幅に削減できます。
 
-## 開発タスクリスト
+## 開発タスクリスト（完了）
 
 ### Phase 1: 基盤整備とGemini API統合
 
 #### 1.1 Geminiサービスの実装
-- [ ] `src/services/gemini.ts` を作成
-- [ ] Google Generative AI SDKをインストール (`@google/generative-ai`)
-- [ ] `GeminiImageService` クラスの基本実装
-- [ ] 環境変数からAPIキーを読み込む処理
-- [ ] エラーハンドリング（APIキー未設定、API呼び出しエラー）
+- [x] `src/services/gemini.ts` を作成
+- [x] Google Generative AI SDKをインストール (`@google/genai`)
+- [x] `GeminiImageService` クラスの基本実装
+- [x] 環境変数からAPIキーを読み込む処理（遅延初期化で実装）
+- [x] エラーハンドリング（APIキー未設定、API呼び出しエラー）
 
 #### 1.2 画像生成URLパーサーの実装
-- [ ] `generate://` プレフィックスの検出処理を `src/scenes/image.ts` に追加
-- [ ] URLからプロンプトを抽出する関数の実装
-- [ ] 詳細設定（オブジェクト形式）のパース処理
+- [x] `generate://` プレフィックスの検出処理を `src/utils/generate-url-parser.ts` に実装
+- [x] URLからプロンプトを抽出する関数の実装
+- [x] 詳細設定（オブジェクト形式）のパース処理
 
 #### 1.3 キャッシュシステムの基礎実装
-- [ ] `src/services/image-cache.ts` を作成
-- [ ] キャッシュキー生成関数の実装（SHA256ハッシュ）
-- [ ] キャッシュディレクトリの作成・管理
-- [ ] キャッシュの読み込み・保存処理
+- [x] `src/services/image-cache.ts` を作成
+- [x] キャッシュキー生成関数の実装（SHA256ハッシュ）
+- [x] キャッシュディレクトリの作成・管理
+- [x] キャッシュの読み込み・保存処理
 
 ### Phase 2: 画像シーンへの統合
 
 #### 2.1 ImageSceneRendererの拡張
-- [ ] `src/scenes/image.ts` の `render` メソッドを更新
-- [ ] `generate://` URLの場合は `GeminiImageService` を呼び出す
-- [ ] 通常のファイルパスとの分岐処理
-- [ ] キャッシュされた画像の利用
+- [x] `src/scenes/image.ts` の `render` メソッドを更新
+- [x] `generate://` URLの場合は `GeminiImageService` を呼び出す
+- [x] 通常のファイルパスとの分岐処理
+- [x] キャッシュされた画像の利用
 
 #### 2.2 エラーハンドリングとフォールバック
-- [ ] Gemini API呼び出し失敗時のエラーメッセージ改善
-- [ ] ネットワークエラー時の適切なハンドリング
-- [ ] レート制限エラーの検出と対処
+- [x] Gemini API呼び出し失敗時のエラーメッセージ改善
+- [x] ネットワークエラー時の適切なハンドリング
+- [ ] レート制限エラーの検出と対処（将来の拡張）
 
 #### 2.3 ログ出力の実装
-- [ ] 画像生成時の詳細ログ（プロンプト、キャッシュパス）
-- [ ] キャッシュヒット/ミス時のログ
-- [ ] 置き換え方法の案内メッセージ
+- [x] 画像生成時の詳細ログ（プロンプト、キャッシュパス）
+- [x] キャッシュヒット/ミス時のログ
+- [x] 置き換え方法の案内メッセージ
 
 ### Phase 3: キャッシュ管理機能
 
 #### 3.1 キャッシュマニフェスト
-- [ ] `manifest.json` の読み書き処理
-- [ ] キャッシュエントリのメタデータ管理
-- [ ] 使用統計の記録
+- [x] `manifest.json` の読み書き処理
+- [x] キャッシュエントリのメタデータ管理
+- [x] 使用統計の記録
 
 #### 3.2 CLIコマンドの追加
-- [ ] `kumiki cache status` コマンドの実装
-- [ ] `kumiki cache clear` コマンドの実装
-- [ ] `kumiki cache size` コマンドの実装
+- [x] `kumiki cache status` コマンドの実装
+- [x] `kumiki cache clear` コマンドの実装
+- [x] `kumiki cache size` コマンドの実装
 
 #### 3.3 キャッシュクリーンアップ
-- [ ] 古いキャッシュの自動削除機能
-- [ ] キャッシュサイズの計算
-- [ ] 手動クリーンアップのオプション
+- [x] 古いキャッシュの削除機能（--older-than オプション）
+- [x] キャッシュサイズの計算
+- [x] 手動クリーンアップのオプション
 
 ### Phase 4: テストとドキュメント
 
 #### 4.1 単体テスト
-- [ ] `GeminiImageService` のテスト
-- [ ] キャッシュシステムのテスト
-- [ ] URLパーサーのテスト
-- [ ] モックを使用したAPI呼び出しテスト
+- [ ] `GeminiImageService` のテスト（将来の実装）
+- [ ] キャッシュシステムのテスト（将来の実装）
+- [ ] URLパーサーのテスト（将来の実装）
+- [ ] モックを使用したAPI呼び出しテスト（将来の実装）
 
 #### 4.2 統合テスト
-- [ ] `generate://` URLを含むプロジェクトの動画生成テスト
-- [ ] キャッシュの動作確認テスト
-- [ ] エラーケースのテスト
+- [x] `generate://` URLを含むプロジェクトの動画生成テスト
+- [x] キャッシュの動作確認テスト
+- [x] エラーケースのテスト
 
 #### 4.3 ドキュメント更新
-- [ ] READMEに画像生成機能の説明を追加
-- [ ] 使用例とベストプラクティスの記載
-- [ ] トラブルシューティングガイド
+- [x] 内部ドキュメントに画像生成機能の仕様を記載
+- [x] 使用例とベストプラクティスの記載
+- [ ] READMEへの追加（将来の実装）
 
 ### Phase 5: 最適化と改善
 
