@@ -20,7 +20,7 @@ export class GeminiImageService {
   private genAI: GoogleGenAI | null = null;
   private initialized = false;
 
-  private initialize() {
+  private initialize(): void {
     if (this.initialized) return;
     
     const apiKey = process.env.GEMINI_API_KEY;
