@@ -10,6 +10,7 @@ import dotenv from 'dotenv';
 import { cacheCommand } from '@/commands/cache.js';
 import { generateCommand } from '@/commands/generate.js';
 import { previewCommand } from '@/commands/preview.js';
+import { showSchemaCommand } from '@/commands/show-schema.js';
 import { validateCommand } from '@/commands/validate.js';
 import { logger } from '@/utils/logger.js';
 
@@ -31,6 +32,7 @@ program.addCommand(validateCommand);
 program.addCommand(previewCommand);
 program.addCommand(generateCommand);
 program.addCommand(cacheCommand);
+program.addCommand(showSchemaCommand);
 
 program.parse();
 

@@ -1,8 +1,11 @@
 emit:
   - "typespec-zod"
+  - "@typespec/json-schema"
 
 options:
   "typespec-zod":
     emitAllModels: true
-
+  "@typespec/json-schema":
+    emitAllModels: true
+    
 output-dir: "{project-root}/src/schemas/generated"
