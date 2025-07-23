@@ -447,35 +447,76 @@ export class FFmpegService {
     // Get video duration for fade calculations
     const videoDuration = await this.getVideoDuration(videoPath);
     
-    // Build music filter with fade
-    let musicFilter = `volume=${musicVolume}`;
+    // Check if video has audio stream
+    const hasAudio = await this.hasAudioStream(videoPath);
     
+    // Build music filter chain
+    // For looped audio, we need to ensure the fade out works correctly
+    let musicFilter = '';
+    
+    // First, trim the looped audio to match video duration
+    // Add a small buffer to ensure fade out completes
+    const audioDuration = videoDuration + 0.5;
+    musicFilter = `atrim=0:${audioDuration}`;
+    
+    // Apply fade in at the beginning
     if (fadeIn > 0) {
-      musicFilter = `afade=t=in:st=0:d=${fadeIn},${musicFilter}`;
+      musicFilter = `${musicFilter},afade=t=in:st=0:d=${fadeIn}`;
     }
     
+    // Apply fade out at the end
     if (fadeOut > 0) {
+      // Calculate fade out to complete just before video ends
       const fadeOutStart = Math.max(0, videoDuration - fadeOut);
       musicFilter = `${musicFilter},afade=t=out:st=${fadeOutStart}:d=${fadeOut}`;
     }
+    
+    // Apply volume adjustment last
+    musicFilter = `${musicFilter},volume=${musicVolume}`;
+    
+    // Trim to exact video duration after all effects
+    musicFilter = `${musicFilter},atrim=0:${videoDuration}`;
 
-    // Mix existing audio with background music
-    const args = [
-      '-i', videoPath,
-      '-i', musicPath,
-      '-filter_complex',
-      `[0:a]volume=${existingAudioVolume}[a0];[1:a]${musicFilter}[a1];[a0][a1]amix=inputs=2:duration=first[out]`,
-      '-map', '0:v',
-      '-map', '[out]',
-      '-c:v', 'copy',
-      '-c:a', 'aac',
-      '-y',
-      outputPath,
-    ];
+    let args: string[];
+    
+    if (hasAudio) {
+      // Mix existing audio with background music
+      args = [
+        '-i', videoPath,
+        '-stream_loop', '-1',
+        '-i', musicPath,
+        '-filter_complex',
+        `[1:a]${musicFilter}[music];[0:a]volume=${existingAudioVolume}[voice];[voice][music]amix=inputs=2:duration=first:dropout_transition=2[out]`,
+        '-map', '0:v',
+        '-map', '[out]',
+        '-c:v', 'copy',
+        '-c:a', 'aac',
+        '-t', videoDuration.toString(),
+        '-y',
+        outputPath,
+      ];
+    } else {
+      // Add background music as the only audio track
+      args = [
+        '-i', videoPath,
+        '-stream_loop', '-1',
+        '-i', musicPath,
+        '-filter_complex',
+        `[1:a]${musicFilter}[out]`,
+        '-map', '0:v',
+        '-map', '[out]',
+        '-c:v', 'copy',
+        '-c:a', 'aac',
+        '-t', videoDuration.toString(),
+        '-y',
+        outputPath,
+      ];
+    }
 
-    logger.info('Mixing background music with existing audio', {
+    logger.info('Mixing background music', {
       video: videoPath,
       music: musicPath,
+      hasExistingAudio: hasAudio,
       options,
     });
 

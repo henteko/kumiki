@@ -149,7 +149,7 @@ model AudioSettings {
 }
 
 model BackgroundMusic {
-  src: string;
+  src: string | GenerateMusicSource;
   
   @minValue(0)
   @maxValue(1)
@@ -160,6 +160,50 @@ model BackgroundMusic {
   
   @minValue(0)
   fadeOut?: float64;
+}
+
+model GenerateMusicSource {
+  type: "generate";
+  prompts?: WeightedPrompt[];
+  prompt?: string;
+  config?: MusicGenerationConfig;
+  duration?: float64;
+  seed?: int32;
+}
+
+model WeightedPrompt {
+  text: string;
+  
+  @minValue(0)
+  @maxValue(1)
+  weight: float64;
+}
+
+model MusicGenerationConfig {
+  @minValue(60)
+  @maxValue(200)
+  bpm?: int32;
+  
+  @minValue(0)
+  @maxValue(3)
+  temperature?: float64;
+  
+  @minValue(0)
+  @maxValue(6)
+  guidance?: float64;
+  
+  @minValue(0)
+  @maxValue(1)
+  density?: float64;
+  
+  @minValue(0)
+  @maxValue(1)
+  brightness?: float64;
+  
+  scale?: string;
+  mute_bass?: boolean;
+  mute_drums?: boolean;
+  only_bass_and_drums?: boolean;
 }
 
 

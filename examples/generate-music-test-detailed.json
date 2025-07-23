@@ -1,0 +1,96 @@
+{
+  "version": "1.0",
+  "name": "Generate Music Test with Detailed Config",
+  "settings": {
+    "resolution": "1920x1080",
+    "fps": 30
+  },
+  "audio": {
+    "backgroundMusic": {
+      "src": {
+        "type": "generate",
+        "prompts": [
+          { "text": "ambient piano", "weight": 1.0 },
+          { "text": "calm", "weight": 0.8 },
+          { "text": "presentation background", "weight": 0.6 }
+        ],
+        "config": {
+          "bpm": 80,
+          "temperature": 1.0,
+          "density": 0.5,
+          "brightness": 0.4,
+          "scale": "C_MAJOR_A_MINOR"
+        },
+        "duration": 15
+      },
+      "volume": 0.6,
+      "fadeIn": 3,
+      "fadeOut": 3
+    }
+  },
+  "scenes": [
+    {
+      "id": "scene-1",
+      "type": "text",
+      "duration": 5,
+      "background": {
+        "type": "color",
+        "value": "#1e293b"
+      },
+      "content": {
+        "text": "詳細設定でのBGM生成",
+        "style": {
+          "fontSize": 48,
+          "color": "#ffffff",
+          "fontFamily": "Arial"
+        },
+        "position": {
+          "x": "center",
+          "y": "center"
+        }
+      }
+    },
+    {
+      "id": "scene-2",
+      "type": "text",
+      "duration": 5,
+      "background": {
+        "type": "gradient",
+        "value": "linear-gradient(to bottom, #1e293b, #334155)"
+      },
+      "content": {
+        "text": "BPM80のゆったりとした音楽",
+        "style": {
+          "fontSize": 36,
+          "color": "#ffffff",
+          "fontFamily": "Arial"
+        },
+        "position": {
+          "x": "center",
+          "y": "center"
+        }
+      }
+    },
+    {
+      "id": "scene-3",
+      "type": "text",
+      "duration": 5,
+      "background": {
+        "type": "color",
+        "value": "#334155"
+      },
+      "content": {
+        "text": "生成完了!",
+        "style": {
+          "fontSize": 48,
+          "color": "#10b981",
+          "fontFamily": "Arial"
+        },
+        "position": {
+          "x": "center",
+          "y": "center"
+        }
+      }
+    }
+  ]
+}

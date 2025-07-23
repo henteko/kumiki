@@ -43,3 +43,10 @@ export class ProcessError extends KumikiError {
     this.name = 'ProcessError';
   }
 }
+
+export class GeminiError extends KumikiError {
+  constructor(message: string, details?: unknown) {
+    super(message, 'GEMINI_ERROR', details);
+    this.name = 'GeminiError';
+  }
+}

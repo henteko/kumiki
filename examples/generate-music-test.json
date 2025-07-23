@@ -1,0 +1,66 @@
+{
+  "version": "1.0",
+  "name": "Generate Music Test",
+  "settings": {
+    "resolution": "1920x1080",
+    "fps": 30,
+    "narrationDefaults": {
+      "volumeMix": {
+        "narration": 0.8,
+        "bgm": 0.3
+      }
+    }
+  },
+  "audio": {
+    "backgroundMusic": {
+      "src": "generate://ambient piano music for presentation",
+      "volume": 0.7,
+      "fadeIn": 2,
+      "fadeOut": 3
+    }
+  },
+  "scenes": [
+    {
+      "id": "scene-1",
+      "type": "text",
+      "duration": 5,
+      "background": {
+        "type": "color",
+        "value": "#1e293b"
+      },
+      "content": {
+        "text": "BGM自動生成テスト",
+        "style": {
+          "fontSize": 48,
+          "color": "#ffffff",
+          "fontFamily": "Arial"
+        },
+        "position": {
+          "x": "center",
+          "y": "center"
+        }
+      }
+    },
+    {
+      "id": "scene-2",
+      "type": "text",
+      "duration": 5,
+      "background": {
+        "type": "gradient",
+        "value": "linear-gradient(to bottom, #1e293b, #334155)"
+      },
+      "content": {
+        "text": "音楽が流れているはずです",
+        "style": {
+          "fontSize": 36,
+          "color": "#ffffff",
+          "fontFamily": "Arial"
+        },
+        "position": {
+          "x": "center",
+          "y": "center"
+        }
+      }
+    }
+  ]
+}

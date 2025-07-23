@@ -7,10 +7,13 @@ import PQueue from 'p-queue';
 import { parseProjectFile } from '@/core/parser.js';
 import { SceneFactory } from '@/scenes/factory.js';
 import { FFmpegService } from '@/services/ffmpeg.js';
+import { geminiMusicService } from '@/services/gemini-music.js';
+import { musicCache, generateMusicCacheKey } from '@/services/music-cache.js';
 import { narrationService } from '@/services/narration.js';
 import { TransitionService } from '@/services/transition.js';
-import type { KumikiProject, ProcessNarrationResult } from '@/types/index.js';
+import type { KumikiProject, ProcessNarrationResult, GenerateMusicSource } from '@/types/index.js';
 import { ProcessError } from '@/utils/errors.js';
+import { isGenerateMusicUrl, parseGenerateMusicUrl } from '@/utils/generate-music-url-parser.js';
 import { logger } from '@/utils/logger.js';
 
 
@@ -220,9 +223,16 @@ export class Renderer {
    * Add background music to the video
    */
   private async addBackgroundMusic(): Promise<void> {
-    const musicPath = path.resolve(process.cwd(), this.project.audio!.backgroundMusic!.src);
     const tempVideo = path.join(this.tempDir, 'combined.mp4');
     const bgMusic = this.project.audio!.backgroundMusic!;
+    
+    // Resolve music path (handle generate:// URLs)
+    let musicPath: string;
+    if (isGenerateMusicUrl(bgMusic.src)) {
+      musicPath = await this.resolveGenerateMusicUrl(bgMusic.src);
+    } else {
+      musicPath = path.resolve(process.cwd(), bgMusic.src as string);
+    }
     
     logger.info('Adding background music', {
       music: musicPath,
@@ -336,6 +346,85 @@ export class Renderer {
         });
         // Continue with other narrations
       }
+    }
+  }
+
+  /**
+   * Resolve generate:// URL to actual music path
+   */
+  private async resolveGenerateMusicUrl(src: string | GenerateMusicSource): Promise<string> {
+    // Initialize cache if needed
+    await musicCache.initialize();
+    
+    // Parse generate URL
+    const params = parseGenerateMusicUrl(src);
+    
+    // Generate cache key
+    const cacheKey = generateMusicCacheKey(params);
+    
+    // Check cache first
+    const cachedPath = await musicCache.get(cacheKey, this.projectPath);
+    if (cachedPath) {
+      logger.info('Using cached generated music', {
+        prompt: params.prompt || 'weighted prompts',
+        cachedPath,
+      });
+      logger.info('To replace: Change src to your actual music file path in the JSON file');
+      return cachedPath;
+    }
+    
+    // Calculate duration if not specified
+    let videoDuration: number;
+    if (params.duration) {
+      // If duration is explicitly specified in the generate config
+      videoDuration = params.duration;
+    } else {
+      // Calculate total project duration
+      videoDuration = this.project.scenes.reduce((total, scene) => total + scene.duration, 0);
+    }
+    
+    // Add 10 seconds buffer to ensure smooth looping and fades
+    const generationDuration = videoDuration + 10;
+    params.duration = generationDuration;
+    
+    // Generate new music
+    logger.info('Generating background music', {
+      prompt: params.prompt,
+      prompts: params.prompts,
+      duration: generationDuration,
+      videoDuration: videoDuration,
+      config: params.config,
+    });
+    
+    try {
+      const musicData = await geminiMusicService.generateMusic(params);
+      
+      // Save to cache
+      const musicPath = await musicCache.save(cacheKey, musicData, params, this.projectPath);
+      
+      logger.info('Generated music saved', {
+        prompt: params.prompt || 'weighted prompts',
+        path: musicPath,
+        generatedDuration: generationDuration,
+        videoDuration: videoDuration,
+      });
+      logger.info('To replace: Change src to your actual music file path in the JSON file');
+      
+      return musicPath;
+    } catch (error) {
+      logger.error('Failed to generate music', {
+        error: error instanceof Error ? error.message : String(error),
+        errorDetails: error,
+      });
+      throw new ProcessError(
+        error instanceof Error ? error.message : 'Failed to generate music',
+        'MUSIC_GENERATION_FAILED',
+        {
+          prompt: params.prompt,
+          prompts: params.prompts,
+          error: error instanceof Error ? error.message : String(error),
+        }
+      );
     }
   }
 

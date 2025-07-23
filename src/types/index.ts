@@ -116,10 +116,36 @@ export interface AudioSettings {
 }
 
 export interface BackgroundMusic {
-  src: string;
+  src: string | GenerateMusicSource;
   volume: number;
   fadeIn?: number;
   fadeOut?: number;
+}
+
+export interface GenerateMusicSource {
+  type: 'generate';
+  prompts?: WeightedPrompt[];
+  prompt?: string;
+  config?: MusicGenerationConfig;
+  duration?: number;
+  seed?: number;
+}
+
+export interface WeightedPrompt {
+  text: string;
+  weight: number;
+}
+
+export interface MusicGenerationConfig {
+  bpm?: number;
+  temperature?: number;
+  guidance?: number;
+  density?: number;
+  brightness?: number;
+  scale?: string;
+  mute_bass?: boolean;
+  mute_drums?: boolean;
+  only_bass_and_drums?: boolean;
 }
 
 export interface SceneRenderOptions {

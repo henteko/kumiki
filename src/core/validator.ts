@@ -128,13 +128,19 @@ function validateAdditionalRules(project: KumikiProject): ValidationErrorType[] 
   
   // Validate audio files
   if (project.audio?.backgroundMusic) {
-    const filePath = path.resolve(projectDir, project.audio.backgroundMusic.src);
-    if (!existsSync(filePath)) {
-      errors.push({
-        path: 'audio.backgroundMusic.src',
-        message: `Audio file not found: ${project.audio.backgroundMusic.src}`,
-        code: 'FILE_NOT_FOUND',
-      });
+    // Skip validation for generate URLs
+    const src = project.audio.backgroundMusic.src;
+    if (typeof src === 'object' || (typeof src === 'string' && src.startsWith('generate://'))) {
+      logger.debug('Skipping validation for generate music URL');
+    } else if (typeof src === 'string') {
+      const filePath = path.resolve(projectDir, src);
+      if (!existsSync(filePath)) {
+        errors.push({
+          path: 'audio.backgroundMusic.src',
+          message: `Audio file not found: ${src}`,
+          code: 'FILE_NOT_FOUND',
+        });
+      }
     }
   }
   
