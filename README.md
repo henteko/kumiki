@@ -6,10 +6,13 @@ KumikiはJSONベースの設定ファイルから動画を自動生成するCLI�
 
 - 📝 **JSONベースの設定**: 人間が読みやすいJSON形式で動画の構成を定義
 - 🎬 **多様なシーンタイプ**: テキスト、画像、動画、複合シーンをサポート
-- 🎵 **音声サポート**: BGM、ナレーション機能
+- 🎵 **音声サポート**: BGM、ナレーション、AI音楽生成
 - 🔄 **シーントランジション**: フェード、ワイプ、ディゾルブ効果
-- 🗣️ **AI音声合成**: Google Gemini APIによるナレーション自動音声化
+- 🗣️ **AI音声合成**: Google Gemini APIによるナレーション自動生成
+- 🎼 **AI音楽生成**: Google Gemini APIによるBGM自動生成
+- 🖼️ **AI画像生成**: Google Gemini APIによる画像自動生成
 - 🔍 **スキーマ検証**: 設定ファイルの構文チェックと検証
+- 💾 **インテリジェントキャッシュ**: 生成コンテンツの自動キャッシュと再利用
 - 📋 **AI支援開発**: JSON Schemaを出力してAIツールと連携
 
 ## 必要条件
@@ -80,10 +83,20 @@ KumikiプロジェクトのJSON Schemaを表示します。AIツールとの連�
 #### 5. キャッシュ管理
 
 ```bash
+# キャッシュの状態を確認
+kumiki cache status
+
+# キャッシュサイズを表示
+kumiki cache size
+
+# キャッシュをクリア
 kumiki cache clear
+
+# 30日以上前のキャッシュのみクリア
+kumiki cache clear --older-than 30d
 ```
 
-生成された画像やナレーションのキャッシュをクリアします。
+生成された画像、音楽、ナレーションのキャッシュを管理します。
 
 ## プロジェクトファイルの構造
 
@@ -264,11 +277,33 @@ kumiki cache clear
 
 ### 音声設定
 
+#### BGM（ファイルから）
+
 ```json
 {
   "audio": {
     "backgroundMusic": {
       "src": "assets/bgm.mp3",
+      "volume": 0.5,
+      "fadeIn": 2,
+      "fadeOut": 2
+    }
+  }
+}
+```
+
+#### BGM（AI生成）
+
+```json
+{
+  "audio": {
+    "backgroundMusic": {
+      "src": {
+        "type": "generate",
+        "prompt": "穏やかで明るいピアノとストリングスのBGM",
+        "duration": 30,
+        "seed": 42
+      },
       "volume": 0.5,
       "fadeIn": 2,
       "fadeOut": 2
@@ -330,6 +365,8 @@ ajv validate -s schema.json -d my-project.json
   "settings": {
     "resolution": "1920x1080",
     "fps": 30,
+    "outputFormat": "mp4",
+    "quality": "high",
     "narrationDefaults": {
       "voice": {
         "languageCode": "ja-JP",
@@ -340,12 +377,18 @@ ajv validate -s schema.json -d my-project.json
         "narration": 0.8,
         "bgm": 0.3
       }
+    },
+    "transitionDefaults": {
+      "type": "fade",
+      "duration": 0.5
     }
   }
 }
 ```
 
-### 画像生成（AI）
+### AI生成コンテンツ
+
+#### 画像生成
 
 ```json
 {
@@ -359,6 +402,37 @@ ajv validate -s schema.json -d my-project.json
   }
 }
 ```
+
+#### 音楽生成
+
+```json
+{
+  "audio": {
+    "backgroundMusic": {
+      "src": {
+        "type": "generate",
+        "prompt": "エネルギッシュなロック調のBGM",
+        "duration": 60,
+        "config": {
+          "genre": "rock",
+          "tempo": "fast",
+          "mood": "energetic"
+        }
+      }
+    }
+  }
+}
+```
+
+### キャッシュシステム
+
+Kumikiは生成されたコンテンツ（画像、音楽、ナレーション）を自動的にキャッシュし、同じパラメータでの再生成を避けます。
+
+- **画像キャッシュ**: プロンプト、スタイル、アスペクト比でキャッシュキーを生成
+- **音楽キャッシュ**: プロンプト、長さ、設定でキャッシュキーを生成
+- **ナレーションキャッシュ**: テキスト、音声設定でキャッシュキーを生成
+
+キャッシュは `.kumiki-cache/` ディレクトリに保存されます。
 
 ## 開発
 
