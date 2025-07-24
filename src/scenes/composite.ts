@@ -6,9 +6,12 @@ import { ImageSceneRenderer } from './image.js';
 import { TextSceneRenderer } from './text.js';
 
 import { FFmpegService } from '@/services/ffmpeg.js';
+import { geminiImageService } from '@/services/gemini.js';
+import { imageCache, generateCacheKey } from '@/services/image-cache.js';
 import { PuppeteerService } from '@/services/puppeteer.js';
 import type { CompositeScene, Layer } from '@/types/index.js';
-import { isGenerateUrl } from '@/utils/generate-url-parser.js';
+import { RenderError } from '@/utils/errors.js';
+import { isGenerateUrl, parseGenerateUrl } from '@/utils/generate-url-parser.js';
 import { logger } from '@/utils/logger.js';
 
 export class CompositeSceneRenderer extends BaseScene<CompositeScene> {
@@ -140,8 +143,8 @@ export class CompositeSceneRenderer extends BaseScene<CompositeScene> {
     // Handle generate URLs
     let actualSrc: string;
     if (isGenerateUrl(src)) {
-      // For composite scenes, we need to resolve generate URLs first
-      throw new Error('generate:// URLs are not yet supported in composite scenes');
+      // Resolve generate URL to actual image path
+      actualSrc = await this.resolveGenerateUrl(src);
     } else {
       actualSrc = src as string;
     }
@@ -262,5 +265,68 @@ export class CompositeSceneRenderer extends BaseScene<CompositeScene> {
     }
 
     return true;
+  }
+
+  /**
+   * Resolve generate:// URL to actual image path
+   */
+  private async resolveGenerateUrl(src: string | object): Promise<string> {
+    // Initialize cache if needed
+    await imageCache.initialize();
+    
+    // Parse generate URL
+    const params = parseGenerateUrl(src);
+    
+    // Generate cache key
+    const cacheKey = generateCacheKey(params);
+    
+    // Check cache first
+    const cachedPath = await imageCache.get(cacheKey);
+    if (cachedPath) {
+      logger.info('Using cached generated image in composite layer', {
+        sceneId: this.scene.id,
+        prompt: params.prompt,
+        cachedPath,
+      });
+      return cachedPath;
+    }
+    
+    // Generate new image
+    logger.info('Generating image for composite layer', {
+      sceneId: this.scene.id,
+      prompt: params.prompt,
+      style: params.style,
+      aspectRatio: params.aspectRatio,
+    });
+    
+    try {
+      const imageData = await geminiImageService.generateImage(params);
+      
+      // Save to cache
+      const imagePath = await imageCache.save(cacheKey, imageData, params);
+      
+      logger.info('Generated image saved for composite layer', {
+        sceneId: this.scene.id,
+        prompt: params.prompt,
+        path: imagePath,
+      });
+      
+      return imagePath;
+    } catch (error) {
+      logger.error('Failed to generate image for composite layer', {
+        sceneId: this.scene.id,
+        error: error instanceof Error ? error.message : String(error),
+        errorDetails: error,
+      });
+      throw new RenderError(
+        error instanceof Error ? error.message : 'Failed to generate image',
+        'IMAGE_GENERATION_FAILED',
+        {
+          sceneId: this.scene.id,
+          prompt: params.prompt,
+          error: error instanceof Error ? error.message : String(error),
+        }
+      );
+    }
   }
 }
