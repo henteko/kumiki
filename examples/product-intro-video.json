@@ -1,0 +1,494 @@
+{
+  "version": "1.0.0",
+  "name": "Kumiki Product Introduction",
+  "settings": {
+    "resolution": "1920x1080",
+    "fps": 30,
+    "narrationDefaults": {
+      "voice": {
+        "languageCode": "ja-JP",
+        "name": "Kore",
+        "speakingRate": 1.0,
+        "pitch": 0
+      },
+      "timing": {
+        "delay": 0.5,
+        "fadeIn": 0.3,
+        "fadeOut": 0.3
+      },
+      "volumeMix": {
+        "narration": 0.8,
+        "bgm": 0.3
+      }
+    }
+  },
+  "audio": {
+    "backgroundMusic": {
+      "src": {
+        "type": "generate",
+        "prompt": "明るく軽快なテクノポップ調のBGM、テクノロジー感があり親しみやすい雰囲気",
+        "duration": 90,
+        "config": {
+          "bpm": 120,
+          "temperature": 1.0,
+          "guidance": 3.0
+        }
+      },
+      "volume": 0.3,
+      "fadeIn": 2,
+      "fadeOut": 3
+    }
+  },
+  "scenes": [
+    {
+      "id": "opening",
+      "type": "text",
+      "duration": 5,
+      "content": {
+        "text": "Kumiki",
+        "style": {
+          "fontSize": 96,
+          "fontFamily": "Arial Black, sans-serif",
+          "fontWeight": "900",
+          "color": "#F97316",
+          "textAlign": "center"
+        },
+        "position": {
+          "x": "center",
+          "y": "center"
+        }
+      },
+      "background": {
+        "type": "gradient",
+        "value": "linear-gradient(135deg, #121212 0%, #2a2a2a 100%)"
+      }
+    },
+    {
+      "id": "problem",
+      "type": "composite",
+      "duration": 10,
+      "background": {
+        "type": "gradient",
+        "value": "linear-gradient(135deg, #121212 0%, #2a2a2a 100%)"
+      },
+      "layers": [
+        {
+          "type": "image",
+          "content": {
+            "src": {
+              "type": "generate",
+              "prompt": "複雑な動画編集ソフトのインターフェース画面、多数のパネルとツールバー、ダークテーマ",
+              "style": "photorealistic",
+              "aspectRatio": "16:9"
+            },
+            "fit": "cover",
+            "position": {
+              "x": "center",
+              "y": "center"
+            }
+          },
+          "opacity": 0.3
+        },
+        {
+          "type": "text",
+          "content": {
+            "text": "動画制作は難しい？",
+            "style": {
+              "fontSize": 64,
+              "fontFamily": "Arial, sans-serif",
+              "fontWeight": "bold",
+              "color": "#EAEAEA",
+              "textAlign": "center"
+            },
+            "position": {
+              "x": "center",
+              "y": "center"
+            }
+          }
+        }
+      ],
+      "narration": {
+        "text": "動画制作は時間がかかり、専門的なスキルが必要...そう思っていませんか？"
+      }
+    },
+    {
+      "id": "solution",
+      "type": "composite",
+      "duration": 8,
+      "background": {
+        "type": "gradient",
+        "value": "linear-gradient(135deg, #121212 0%, #2a2a2a 100%)"
+      },
+      "layers": [
+        {
+          "type": "text",
+          "content": {
+            "text": "{\n  \"type\": \"text\",\n  \"content\": {\n    \"text\": \"Hello Kumiki!\"\n  }\n}",
+            "style": {
+              "fontSize": 28,
+              "fontFamily": "Courier New, monospace",
+              "color": "#FDBA74",
+              "textAlign": "left"
+            },
+            "position": {
+              "x": 100,
+              "y": "center"
+            }
+          }
+        },
+        {
+          "type": "text",
+          "content": {
+            "text": "→",
+            "style": {
+              "fontSize": 72,
+              "fontFamily": "Arial, sans-serif",
+              "color": "#F97316",
+              "textAlign": "center"
+            },
+            "position": {
+              "x": "center",
+              "y": "center"
+            }
+          }
+        },
+        {
+          "type": "text",
+          "content": {
+            "text": "🎬",
+            "style": {
+              "fontSize": 120,
+              "fontFamily": "Arial, sans-serif",
+              "color": "#EAEAEA",
+              "textAlign": "center"
+            },
+            "position": {
+              "x": 1400,
+              "y": "center"
+            }
+          }
+        }
+      ],
+      "narration": {
+        "text": "Kumikiなら、JSONファイルを書くだけで、プロ品質の動画が自動生成できます"
+      },
+      "transition": {
+        "type": "wipe",
+        "duration": 0.5,
+        "direction": "left"
+      }
+    },
+    {
+      "id": "feature1",
+      "type": "text",
+      "duration": 12,
+      "content": {
+        "text": "シンプルな設定\n\n{\n  \"scenes\": [{\n    \"type\": \"text\",\n    \"duration\": 5,\n    \"content\": {\n      \"text\": \"Welcome!\",\n      \"style\": {\n        \"fontSize\": 48,\n        \"color\": \"#FFFFFF\"\n      }\n    }\n  }]\n}",
+        "style": {
+          "fontSize": 24,
+          "fontFamily": "Courier New, monospace",
+          "color": "#EAEAEA",
+          "textAlign": "center"
+        },
+        "position": {
+          "x": "center",
+          "y": "center"
+        }
+      },
+      "background": {
+        "type": "gradient",
+        "value": "linear-gradient(135deg, #121212 0%, #2a2a2a 100%)"
+      },
+      "narration": {
+        "text": "設定はとてもシンプル。テキスト、画像、動画を組み合わせて、思い通りの構成を作れます"
+      }
+    },
+    {
+      "id": "feature2",
+      "type": "composite",
+      "duration": 15,
+      "background": {
+        "type": "gradient",
+        "value": "linear-gradient(135deg, #121212 0%, #2a2a2a 100%)"
+      },
+      "layers": [
+        {
+          "type": "text",
+          "content": {
+            "text": "AI機能搭載",
+            "style": {
+              "fontSize": 48,
+              "fontFamily": "Arial, sans-serif",
+              "fontWeight": "bold",
+              "color": "#F97316",
+              "textAlign": "center"
+            },
+            "position": {
+              "x": "center",
+              "y": 100
+            }
+          }
+        },
+        {
+          "type": "text",
+          "content": {
+            "text": "🖼️ 画像生成     🎵 音楽生成     🗣️ ナレーション",
+            "style": {
+              "fontSize": 36,
+              "fontFamily": "Arial, sans-serif",
+              "color": "#FDBA74",
+              "textAlign": "center"
+            },
+            "position": {
+              "x": "center",
+              "y": 300
+            }
+          }
+        },
+        {
+          "type": "text",
+          "content": {
+            "text": "\"src\": {\n  \"type\": \"generate\",\n  \"prompt\": \"夕日の富士山\"\n}",
+            "style": {
+              "fontSize": 22,
+              "fontFamily": "Courier New, monospace",
+              "color": "#A7F3D0",
+              "textAlign": "center"
+            },
+            "position": {
+              "x": "center",
+              "y": 500
+            }
+          }
+        }
+      ],
+      "narration": {
+        "text": "さらに、AI機能を搭載。画像、音楽、ナレーションを自動生成。素材がなくても大丈夫"
+      }
+    },
+    {
+      "id": "feature3",
+      "type": "composite",
+      "duration": 12,
+      "background": {
+        "type": "gradient",
+        "value": "linear-gradient(135deg, #121212 0%, #2a2a2a 100%)"
+      },
+      "layers": [
+        {
+          "type": "text",
+          "content": {
+            "text": "開発者フレンドリー",
+            "style": {
+              "fontSize": 48,
+              "fontFamily": "Arial, sans-serif",
+              "fontWeight": "bold",
+              "color": "#F97316",
+              "textAlign": "center"
+            },
+            "position": {
+              "x": "center",
+              "y": 100
+            }
+          }
+        },
+        {
+          "type": "text",
+          "content": {
+            "text": "$ kumiki validate project.json\n✓ Validation passed\n\n$ kumiki generate project.json\n⚡ Generating video...\n✓ Video created: output.mp4",
+            "style": {
+              "fontSize": 26,
+              "fontFamily": "Courier New, monospace",
+              "color": "#A7F3D0",
+              "textAlign": "center"
+            },
+            "position": {
+              "x": "center",
+              "y": "center"
+            }
+          }
+        },
+        {
+          "type": "image",
+          "content": {
+            "src": {
+              "type": "generate",
+              "prompt": "VSCodeエディタでKumikiのJSONファイルを編集している画面、ダークテーマ、シンタックスハイライト付き",
+              "style": "photorealistic",
+              "aspectRatio": "16:10"
+            },
+            "fit": "contain",
+            "position": {
+              "x": "center",
+              "y": 450
+            }
+          },
+          "opacity": 0.6,
+          "zIndex": 0
+        }
+      ],
+      "narration": {
+        "text": "開発者のために設計されたCLIツール。バージョン管理も簡単で、CI/CDにも組み込めます"
+      }
+    },
+    {
+      "id": "demo",
+      "type": "text",
+      "duration": 15,
+      "content": {
+        "text": "3つのステップで完成\n\n1️⃣ Validate    2️⃣ Preview    3️⃣ Generate",
+        "style": {
+          "fontSize": 48,
+          "fontFamily": "Arial, sans-serif",
+          "fontWeight": "bold",
+          "color": "#FDBA74",
+          "textAlign": "center"
+        },
+        "position": {
+          "x": "center",
+          "y": "center"
+        }
+      },
+      "background": {
+        "type": "gradient",
+        "value": "linear-gradient(135deg, #121212 0%, #2a2a2a 100%)"
+      },
+      "narration": {
+        "text": "validateで検証、previewで確認、generateで動画を生成。たった3つのコマンドで完成です"
+      }
+    },
+    {
+      "id": "use-cases",
+      "type": "text",
+      "duration": 10,
+      "content": {
+        "text": "様々な用途に\n\n📱 製品デモ    📚 教育コンテンツ    📢 SNS動画",
+        "style": {
+          "fontSize": 42,
+          "fontFamily": "Arial, sans-serif",
+          "color": "#EAEAEA",
+          "textAlign": "center"
+        },
+        "position": {
+          "x": "center",
+          "y": "center"
+        }
+      },
+      "background": {
+        "type": "gradient",
+        "value": "linear-gradient(135deg, #121212 0%, #2a2a2a 100%)"
+      },
+      "narration": {
+        "text": "製品デモ、教育コンテンツ、SNS用動画など、様々な用途に活用できます"
+      }
+    },
+    {
+      "id": "cta",
+      "type": "composite",
+      "duration": 8,
+      "background": {
+        "type": "gradient",
+        "value": "linear-gradient(135deg, #121212 0%, #2a2a2a 100%)"
+      },
+      "layers": [
+        {
+          "type": "text",
+          "content": {
+            "text": "今すぐ始めよう",
+            "style": {
+              "fontSize": 56,
+              "fontFamily": "Arial, sans-serif",
+              "fontWeight": "bold",
+              "color": "#EAEAEA",
+              "textAlign": "center"
+            },
+            "position": {
+              "x": "center",
+              "y": 300
+            }
+          }
+        },
+        {
+          "type": "text",
+          "content": {
+            "text": "github.com/henteko/kumiki",
+            "style": {
+              "fontSize": 36,
+              "fontFamily": "Arial, sans-serif",
+              "color": "#F97316",
+              "textAlign": "center"
+            },
+            "position": {
+              "x": "center",
+              "y": 450
+            }
+          }
+        },
+        {
+          "type": "text",
+          "content": {
+            "text": "[ Get Started ]",
+            "style": {
+              "fontSize": 32,
+              "fontFamily": "Arial, sans-serif",
+              "fontWeight": "bold",
+              "color": "#121212",
+              "textAlign": "center"
+            },
+            "position": {
+              "x": "center",
+              "y": 600
+            }
+          }
+        }
+      ],
+      "narration": {
+        "text": "今すぐKumikiを始めましょう。詳細はGitHubをチェック"
+      }
+    },
+    {
+      "id": "ending",
+      "type": "composite",
+      "duration": 5,
+      "background": {
+        "type": "gradient",
+        "value": "radial-gradient(circle at center, #2a2a2a 0%, #121212 100%)"
+      },
+      "layers": [
+        {
+          "type": "text",
+          "content": {
+            "text": "Kumiki",
+            "style": {
+              "fontSize": 96,
+              "fontFamily": "Arial Black, sans-serif",
+              "fontWeight": "900",
+              "color": "#F97316",
+              "textAlign": "center"
+            },
+            "position": {
+              "x": "center",
+              "y": 400
+            }
+          }
+        },
+        {
+          "type": "text",
+          "content": {
+            "text": "Build Videos with JSON",
+            "style": {
+              "fontSize": 32,
+              "fontFamily": "Arial, sans-serif",
+              "color": "#FDBA74",
+              "textAlign": "center"
+            },
+            "position": {
+              "x": "center",
+              "y": 520
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
