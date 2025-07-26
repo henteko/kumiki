@@ -164,6 +164,76 @@ export class FFmpegService {
 
     await this.ensureOutputDirectory(output);
 
+    // Check if any input has audio
+    const audioChecks = await Promise.all(inputs.map(input => this.hasAudioStream(input)));
+    const hasAnyAudio = audioChecks.some(hasAudio => hasAudio);
+    
+    if (hasAnyAudio) {
+      // Use filter_complex to handle mixed audio/video streams
+      const filterComplexParts: string[] = [];
+      const inputArgs: string[] = [];
+      
+      // Add all inputs
+      for (const input of inputs) {
+        inputArgs.push('-i', input);
+      }
+      
+      // Build filter for video concatenation
+      const videoConcat = inputs.map((_, i) => `[${i}:v]`).join('');
+      filterComplexParts.push(`${videoConcat}concat=n=${inputs.length}:v=1:a=0[outv]`);
+      
+      // Build filter for audio concatenation with silent audio for videos without audio
+      const audioFilters: string[] = [];
+      for (let i = 0; i < inputs.length; i++) {
+        if (audioChecks[i]) {
+          audioFilters.push(`[${i}:a]`);
+        } else {
+          // Generate silent audio for this video
+          const duration = await this.getVideoDuration(inputs[i]!);
+          audioFilters.push(`aevalsrc=0:channel_layout=stereo:sample_rate=48000:duration=${duration}[s${i}];[s${i}]`);
+        }
+      }
+      
+      const audioConcat = audioFilters.join('');
+      filterComplexParts.push(`${audioConcat}concat=n=${inputs.length}:v=0:a=1[outa]`);
+      
+      const filterComplex = filterComplexParts.join(';');
+      
+      const args = [
+        ...inputArgs,
+        '-filter_complex', filterComplex,
+        '-map', '[outv]',
+        '-map', '[outa]',
+        '-c:v', 'libx264',
+        '-c:a', 'aac',
+        '-y',
+        output,
+      ];
+      
+      logger.info('Concatenating videos with mixed audio', { 
+        count: inputs.length, 
+        output,
+        hasAudio: audioChecks,
+      });
+      
+      try {
+        await this.execute('ffmpeg', args, options.onProgress);
+      } catch (error) {
+        logger.error('Failed to concatenate videos', {
+          error: error instanceof Error ? error.message : String(error),
+        });
+        throw error;
+      }
+    } else {
+      // No videos have audio, use simple concatenation
+      await this.concatenateWithList(inputs, output, options.onProgress);
+    }
+  }
+
+  /**
+   * Helper method to concatenate videos using concat list
+   */
+  private async concatenateWithList(inputs: string[], output: string, onProgress?: (progress: number) => void): Promise<void> {
     // Create temporary concat list file
     const concatListPath = path.join(path.dirname(output), 'concat-list.txt');
     const concatList = inputs.map(input => `file '${path.resolve(input)}'`).join('\n');
@@ -182,7 +252,7 @@ export class FFmpegService {
 
       logger.info('Concatenating videos', { count: inputs.length, output });
 
-      await this.execute('ffmpeg', args, options.onProgress);
+      await this.execute('ffmpeg', args, onProgress);
     } finally {
       // Clean up temp file
       if (existsSync(concatListPath)) {

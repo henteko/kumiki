@@ -1,0 +1,62 @@
+{
+  "version": "1.0.0",
+  "name": "Narration Issue Test",
+  "settings": {
+    "resolution": "1920x1080",
+    "fps": 30,
+    "narrationDefaults": {
+      "voice": {
+        "languageCode": "ja-JP",
+        "name": "Kore",
+        "speakingRate": 1.0
+      }
+    }
+  },
+  "scenes": [
+    {
+      "id": "scene1",
+      "type": "text",
+      "duration": 5,
+      "content": {
+        "text": "シーン1（ナレーションなし）",
+        "style": {
+          "fontSize": 48,
+          "color": "#FFFFFF",
+          "fontFamily": "Arial"
+        },
+        "position": {
+          "x": "center",
+          "y": "center"
+        }
+      },
+      "background": {
+        "type": "color",
+        "value": "#1a202c"
+      }
+    },
+    {
+      "id": "scene2",
+      "type": "text",
+      "duration": 5,
+      "content": {
+        "text": "シーン2",
+        "style": {
+          "fontSize": 48,
+          "color": "#FFFFFF",
+          "fontFamily": "Arial"
+        },
+        "position": {
+          "x": "center",
+          "y": "center"
+        }
+      },
+      "background": {
+        "type": "color",
+        "value": "#2d3748"
+      },
+      "narration": {
+        "text": "これは2番目のシーンのナレーションです。最初のシーンにはナレーションがありません。"
+      }
+    }
+  ]
+}
