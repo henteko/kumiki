@@ -13,7 +13,7 @@
       },
       "timing": {
         "delay": 0.5,
-        "fadeIn": 0.3,
+        "fadeIn": 0,
         "fadeOut": 0.3
       },
       "volumeMix": {
@@ -24,16 +24,7 @@
   },
   "audio": {
     "backgroundMusic": {
-      "src": {
-        "type": "generate",
-        "prompt": "明るく軽快なテクノポップ調のBGM、テクノロジー感があり親しみやすい雰囲気",
-        "duration": 90,
-        "config": {
-          "bpm": 120,
-          "temperature": 1.0,
-          "guidance": 3.0
-        }
-      },
+      "src": "examples/product-intro-video/bgm.mp3",
       "volume": 0.3,
       "fadeIn": 2,
       "fadeOut": 3
@@ -43,7 +34,7 @@
     {
       "id": "opening",
       "type": "text",
-      "duration": 10,
+      "duration": 3,
       "content": {
         "text": "Kumiki",
         "style": {
@@ -66,7 +57,7 @@
     {
       "id": "problem",
       "type": "composite",
-      "duration": 10,
+      "duration": 12,
       "background": {
         "type": "gradient",
         "value": "linear-gradient(135deg, #121212 0%, #2a2a2a 100%)"
@@ -109,92 +100,58 @@
       ],
       "narration": {
         "text": "動画制作は時間がかかり、専門的なスキルが必要...そう思っていませんか？"
-      },
-      "transition": {
-        "type": "wipe",
-        "duration": 2,
-        "direction": "left"
       }
     },
     {
       "id": "solution",
-      "type": "composite",
+      "type": "image",
       "duration": 8,
+      "content": {
+        "src": "examples/product-intro-video/solution.png",
+        "fit": "contain",
+        "position": { "x": "center", "y": "center" }
+      },
       "background": {
         "type": "gradient",
         "value": "linear-gradient(135deg, #121212 0%, #2a2a2a 100%)"
       },
-      "layers": [
-        {
-          "type": "text",
-          "content": {
-            "text": "{\n  \"type\": \"text\",\n  \"content\": {\n    \"text\": \"Hello Kumiki!\"\n  }\n}",
-            "style": {
-              "fontSize": 28,
-              "fontFamily": "Courier New, monospace",
-              "color": "#FDBA74",
-              "textAlign": "left"
-            },
-            "position": {
-              "x": 100,
-              "y": "center"
-            }
-          }
-        },
-        {
-          "type": "text",
-          "content": {
-            "text": "→",
-            "style": {
-              "fontSize": 72,
-              "fontFamily": "Arial, sans-serif",
-              "color": "#F97316",
-              "textAlign": "center"
-            },
-            "position": {
-              "x": "center",
-              "y": "center"
-            }
-          }
-        },
-        {
-          "type": "text",
-          "content": {
-            "text": "🎬",
-            "style": {
-              "fontSize": 120,
-              "fontFamily": "Arial, sans-serif",
-              "color": "#EAEAEA",
-              "textAlign": "center"
-            },
-            "position": {
-              "x": 1400,
-              "y": "center"
-            }
-          }
-        }
-      ],
       "narration": {
-        "text": "Kumikiなら、JSONファイルを書くだけで、プロ品質の動画が自動生成できます"
+        "text": "Kumikiなら、JSONファイルだけでプロ品質の動画が自動生成できます"
       }
     },
     {
       "id": "feature1",
-      "type": "text",
+      "type": "composite",
       "duration": 12,
-      "content": {
-        "text": "シンプルな設定\n\n{\n  \"scenes\": [{\n    \"type\": \"text\",\n    \"duration\": 5,\n    \"content\": {\n      \"text\": \"Welcome!\",\n      \"style\": {\n        \"fontSize\": 48,\n        \"color\": \"#FFFFFF\"\n      }\n    }\n  }]\n}",
-        "style": {
-          "fontSize": 24,
-          "fontFamily": "Courier New, monospace",
-          "color": "#EAEAEA",
-          "textAlign": "center"
+      "layers": [
+        {
+          "type": "image",
+          "content": {
+            "src": "examples/product-intro-video/feature1.png",
+            "fit": "contain",
+            "position": { "x": "center", "y": "center" }
+          }
         },
-        "position": {
-          "x": "center",
-          "y": "center"
+        {
+          "type": "text",
+          "content": {
+            "text": "シンプルな設定",
+            "style": {
+              "fontSize": 64,
+              "fontFamily": "Courier New, monospace",
+              "color": "#EAEAEA",
+              "textAlign": "center",
+              "backgroundColor": "#1E1E1E",
+              "padding": 30,
+              "borderRadius": 8
+            },
+            "position": {
+              "x": "center",
+              "y": 300
+            }
+          }
         }
-      },
+      ],
       "background": {
         "type": "gradient",
         "value": "linear-gradient(135deg, #121212 0%, #2a2a2a 100%)"
@@ -206,7 +163,7 @@
     {
       "id": "feature2",
       "type": "composite",
-      "duration": 15,
+      "duration": 12,
       "background": {
         "type": "gradient",
         "value": "linear-gradient(135deg, #121212 0%, #2a2a2a 100%)"
@@ -253,7 +210,10 @@
               "fontSize": 22,
               "fontFamily": "Courier New, monospace",
               "color": "#A7F3D0",
-              "textAlign": "center"
+              "textAlign": "center",
+              "backgroundColor": "#1E1E1E",
+              "padding": 15,
+              "borderRadius": 6
             },
             "position": {
               "x": "center",
@@ -300,7 +260,10 @@
               "fontSize": 26,
               "fontFamily": "Courier New, monospace",
               "color": "#A7F3D0",
-              "textAlign": "center"
+              "textAlign": "center",
+              "backgroundColor": "#0D1117",
+              "padding": 25,
+              "borderRadius": 8
             },
             "position": {
               "x": "center",
@@ -354,7 +317,7 @@
         "value": "linear-gradient(135deg, #121212 0%, #2a2a2a 100%)"
       },
       "narration": {
-        "text": "validateで検証、previewで確認、generateで動画を生成。たった3つのコマンドで完成です"
+        "text": "ValidateでJSONファイルの検証、Previewで画像として確認、Generateで動画を生成できます"
       }
     },
     {
@@ -448,47 +411,26 @@
     },
     {
       "id": "ending",
-      "type": "composite",
-      "duration": 5,
+      "type": "text",
+      "duration": 3,
+      "content": {
+        "text": "Kumiki",
+        "style": {
+          "fontSize": 96,
+          "fontFamily": "Arial Black, sans-serif",
+          "fontWeight": "900",
+          "color": "#F97316",
+          "textAlign": "center"
+        },
+        "position": {
+          "x": "center",
+          "y": "center"
+        }
+      },
       "background": {
         "type": "gradient",
-        "value": "radial-gradient(circle at center, #2a2a2a 0%, #121212 100%)"
-      },
-      "layers": [
-        {
-          "type": "text",
-          "content": {
-            "text": "Kumiki",
-            "style": {
-              "fontSize": 96,
-              "fontFamily": "Arial Black, sans-serif",
-              "fontWeight": "900",
-              "color": "#F97316",
-              "textAlign": "center"
-            },
-            "position": {
-              "x": "center",
-              "y": 400
-            }
-          }
-        },
-        {
-          "type": "text",
-          "content": {
-            "text": "Build Videos with JSON",
-            "style": {
-              "fontSize": 32,
-              "fontFamily": "Arial, sans-serif",
-              "color": "#FDBA74",
-              "textAlign": "center"
-            },
-            "position": {
-              "x": "center",
-              "y": 520
-            }
-          }
-        }
-      ]
+        "value": "linear-gradient(135deg, #121212 0%, #2a2a2a 100%)"
+      }
     }
   ]
 }
