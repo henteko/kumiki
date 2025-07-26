@@ -1,2 +1,0 @@
-* 最初のsceneにnarrationがない場合narrationが追加されない問題
-* compositeのsceneの場合transitionを指定してしまうと動画が止まる問題

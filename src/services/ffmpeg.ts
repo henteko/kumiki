@@ -183,18 +183,19 @@ export class FFmpegService {
       filterComplexParts.push(`${videoConcat}concat=n=${inputs.length}:v=1:a=0[outv]`);
       
       // Build filter for audio concatenation with silent audio for videos without audio
-      const audioFilters: string[] = [];
+      const audioSources: string[] = [];
       for (let i = 0; i < inputs.length; i++) {
         if (audioChecks[i]) {
-          audioFilters.push(`[${i}:a]`);
+          audioSources.push(`[${i}:a]`);
         } else {
           // Generate silent audio for this video
           const duration = await this.getVideoDuration(inputs[i]!);
-          audioFilters.push(`aevalsrc=0:channel_layout=stereo:sample_rate=48000:duration=${duration}[s${i}];[s${i}]`);
+          filterComplexParts.push(`aevalsrc=0:channel_layout=stereo:sample_rate=48000:duration=${duration}[s${i}]`);
+          audioSources.push(`[s${i}]`);
         }
       }
       
-      const audioConcat = audioFilters.join('');
+      const audioConcat = audioSources.join('');
       filterComplexParts.push(`${audioConcat}concat=n=${inputs.length}:v=0:a=1[outa]`);
       
       const filterComplex = filterComplexParts.join(';');
