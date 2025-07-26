@@ -661,7 +661,7 @@ export class FFmpegService {
         '-i', videoPath,
         '-i', narrationPath,
         '-filter_complex',
-        `[0:a]volume=${bgmVolume}[bgm];[1:a]${narrationFilter}[narr];[bgm][narr]amix=inputs=2:duration=first[out]`,
+        `[0:a]volume=${bgmVolume}[bgm];[1:a]${narrationFilter},apad=whole_dur=${videoDuration}[narr];[bgm][narr]amix=inputs=2:duration=first[out]`,
         '-map', '0:v',
         '-map', '[out]',
         '-c:v', 'copy',
@@ -671,16 +671,16 @@ export class FFmpegService {
       ];
     } else {
       // Just add narration as the only audio track
+      // Use apad to extend audio with silence to match video duration
       args = [
         '-i', videoPath,
         '-i', narrationPath,
         '-filter_complex',
-        `[1:a]${narrationFilter}[out]`,
+        `[1:a]${narrationFilter},apad=whole_dur=${videoDuration}[out]`,
         '-map', '0:v',
         '-map', '[out]',
         '-c:v', 'copy',
         '-c:a', 'aac',
-        '-shortest',
         '-y',
         outputPath,
       ];
