@@ -57,7 +57,7 @@
     {
       "id": "problem",
       "type": "composite",
-      "duration": 12,
+      "duration": 7,
       "background": {
         "type": "gradient",
         "value": "linear-gradient(135deg, #121212 0%, #2a2a2a 100%)"
@@ -187,38 +187,11 @@
           }
         },
         {
-          "type": "text",
+          "type": "image",
           "content": {
-            "text": "🖼️ 画像生成     🎵 音楽生成     🗣️ ナレーション",
-            "style": {
-              "fontSize": 36,
-              "fontFamily": "Arial, sans-serif",
-              "color": "#FDBA74",
-              "textAlign": "center"
-            },
-            "position": {
-              "x": "center",
-              "y": 300
-            }
-          }
-        },
-        {
-          "type": "text",
-          "content": {
-            "text": "\"src\": {\n  \"type\": \"generate\",\n  \"prompt\": \"夕日の富士山\"\n}",
-            "style": {
-              "fontSize": 22,
-              "fontFamily": "Courier New, monospace",
-              "color": "#A7F3D0",
-              "textAlign": "center",
-              "backgroundColor": "#1E1E1E",
-              "padding": 15,
-              "borderRadius": 6
-            },
-            "position": {
-              "x": "center",
-              "y": 500
-            }
+            "src": "examples/product-intro-video/feature2.png",
+            "fit": "contain",
+            "position": { "x": "center", "y": "center" }
           }
         }
       ],
@@ -270,54 +243,10 @@
               "y": "center"
             }
           }
-        },
-        {
-          "type": "image",
-          "content": {
-            "src": {
-              "type": "generate",
-              "prompt": "VSCodeエディタでKumikiのJSONファイルを編集している画面、ダークテーマ、シンタックスハイライト付き",
-              "style": "photorealistic",
-              "aspectRatio": "16:10"
-            },
-            "fit": "contain",
-            "position": {
-              "x": "center",
-              "y": 450
-            }
-          },
-          "opacity": 0.6,
-          "zIndex": 0
         }
       ],
       "narration": {
         "text": "開発者のために設計されたCLIツール。バージョン管理も簡単で、CI/CDにも組み込めます"
-      }
-    },
-    {
-      "id": "demo",
-      "type": "text",
-      "duration": 15,
-      "content": {
-        "text": "3つのステップで完成\n\n1️⃣ Validate    2️⃣ Preview    3️⃣ Generate",
-        "style": {
-          "fontSize": 48,
-          "fontFamily": "Arial, sans-serif",
-          "fontWeight": "bold",
-          "color": "#FDBA74",
-          "textAlign": "center"
-        },
-        "position": {
-          "x": "center",
-          "y": "center"
-        }
-      },
-      "background": {
-        "type": "gradient",
-        "value": "linear-gradient(135deg, #121212 0%, #2a2a2a 100%)"
-      },
-      "narration": {
-        "text": "ValidateでJSONファイルの検証、Previewで画像として確認、Generateで動画を生成できます"
       }
     },
     {
@@ -376,7 +305,7 @@
           "content": {
             "text": "github.com/henteko/kumiki",
             "style": {
-              "fontSize": 36,
+              "fontSize": 64,
               "fontFamily": "Arial, sans-serif",
               "color": "#F97316",
               "textAlign": "center"
@@ -384,23 +313,6 @@
             "position": {
               "x": "center",
               "y": 450
-            }
-          }
-        },
-        {
-          "type": "text",
-          "content": {
-            "text": "[ Get Started ]",
-            "style": {
-              "fontSize": 32,
-              "fontFamily": "Arial, sans-serif",
-              "fontWeight": "bold",
-              "color": "#121212",
-              "textAlign": "center"
-            },
-            "position": {
-              "x": "center",
-              "y": 600
             }
           }
         }
