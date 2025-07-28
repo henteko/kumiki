@@ -9,7 +9,12 @@ generateでmp4と一緒に.vttファイルが生成したい
 
 ## 動画サムネ自動生成機能
 
-動画の内容をサマライズして、より強調したい部分をサムネ画像として自動生成したい
+動画の内容をGeminiでサマライズして、より強調したい部分をサムネ画像として自動生成したい
 generateでmp4と一緒に.pngが生成されるようにしたい
 
 またpreviewコマンドでもthumbnail.pngとして生成したい
+
+## 動画のAIレビュー機能
+
+生成した動画をGemini API(https://ai.google.dev/gemini-api/docs/video-understanding?hl=ja)でレビューしてもらう機能
+reviewコマンドでmp4を指定することで利用可能
