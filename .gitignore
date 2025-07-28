@@ -46,6 +46,7 @@ output/
 *.png
 *.jpg
 *.jpeg
+*.vtt
 !examples/**/*.mp4
 !examples/**/*.png
 !examples/**/*.jpg

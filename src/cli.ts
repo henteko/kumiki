@@ -11,6 +11,7 @@ import { cacheCommand } from '@/commands/cache.js';
 import { generateCommand } from '@/commands/generate.js';
 import { previewCommand } from '@/commands/preview.js';
 import { showSchemaCommand } from '@/commands/show-schema.js';
+import { subtitleCommand } from '@/commands/subtitle.js';
 import { validateCommand } from '@/commands/validate.js';
 import { logger } from '@/utils/logger.js';
 
@@ -31,6 +32,7 @@ program
 program.addCommand(validateCommand);
 program.addCommand(previewCommand);
 program.addCommand(generateCommand);
+program.addCommand(subtitleCommand);
 program.addCommand(cacheCommand);
 program.addCommand(showSchemaCommand);
 
