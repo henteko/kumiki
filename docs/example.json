@@ -1,0 +1,33 @@
+{
+  "version": "1.0.0",
+  "name": "My Awesome Video",
+  "settings": {
+    "resolution": "1920x1080",
+    "fps": 30
+  },
+  "scenes": [
+    {
+      "id": "intro",
+      "type": "text",
+      "duration": 5,
+      "content": {
+        "text": "Hello, Kumiki!",
+        "style": {
+          "fontSize": 64,
+          "color": "#FFFFFF",
+          "fontFamily": "Arial",
+          "fontWeight": "bold",
+          "textAlign": "center"
+        },
+        "position": {
+          "x": "center",
+          "y": "center"
+        }
+      },
+      "background": {
+        "type": "gradient",
+        "value": "linear-gradient(45deg, #FC466B 0%, #3F5EFB 100%)"
+      } 
+    }
+  ]
+}

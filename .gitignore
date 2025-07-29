@@ -52,4 +52,9 @@ output/
 !examples/**/*.jpg
 !examples/**/*.jpeg
 !examples/**/*.vtt
+!docs/**/*.mp4
+!docs/**/*.png
+!docs/**/*.jpg
+!docs/**/*.jpeg
+!docs/**/*.vtt
 .kumiki-cache/
