@@ -1,5 +1,5 @@
 {
-  "name": "kumiki",
+  "name": "@henteko/kumiki",
   "version": "0.1.0",
   "description": "A video generation tool that creates videos from JSON configurations",
   "type": "module",
@@ -8,6 +8,11 @@
   "bin": {
     "kumiki": "./dist/cli.js"
   },
+  "files": [
+    "dist/**/*",
+    "README.md",
+    "LICENSE"
+  ],
   "scripts": {
     "dev": "npm run generate:schema && tsx src/cli.ts",
     "build": "npm run generate:schema && tsc && tsc-alias",
@@ -23,10 +28,23 @@
     "video",
     "generation",
     "ffmpeg",
-    "animation"
+    "animation",
+    "cli",
+    "json",
+    "automated",
+    "ai",
+    "gemini"
   ],
   "author": "Kenta Imai",
   "license": "Apache-2.0",
+  "homepage": "https://github.com/henteko/kumiki#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/henteko/kumiki.git"
+  },
+  "bugs": {
+    "url": "https://github.com/henteko/kumiki/issues"
+  },
   "engines": {
     "node": ">=18.0.0"
   },

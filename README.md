@@ -24,6 +24,17 @@ Kumiki is a CLI tool that automatically generates videos from JSON-based configu
 
 ## Installation
 
+### Install from npm (Recommended)
+
+```bash
+npm install -g @henteko/kumiki
+
+# Verify installation
+kumiki --version
+```
+
+### Build from source
+
 ```bash
 # Clone the repository
 git clone https://github.com/henteko/kumiki.git

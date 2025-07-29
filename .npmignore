@@ -1,0 +1,52 @@
+# Source files
+src/
+*.ts
+!dist/**/*.d.ts
+
+# Development files
+.eslintrc.*
+.prettierrc
+tsconfig.json
+tspconfig.yaml
+
+# Internal documentation
+internal-docs/
+docs/
+preview/
+
+# Test and example files
+examples/
+output/
+output.mp4
+output.vtt
+*.mp4
+*.vtt
+
+# Build and dependency files
+node_modules/
+.kumiki-cache/
+.kumiki/
+
+# Git and CI files
+.git/
+.github/
+.gitignore
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+
+# Temporary files
+*.log
+*.tmp
+temp/
+tmp/
+
+# CLAUDE.md is for development guidance only
+CLAUDE.md
+
+# Package files
+*.tgz
