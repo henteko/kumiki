@@ -24,7 +24,7 @@
   },
   "audio": {
     "backgroundMusic": {
-      "src": "examples/product-intro-video/bgm.mp3",
+      "src": "docs/product-intro-video/bgm.mp3",
       "volume": 0.3,
       "fadeIn": 2,
       "fadeOut": 3
@@ -107,7 +107,7 @@
       "type": "image",
       "duration": 8,
       "content": {
-        "src": "examples/product-intro-video/solution.png",
+        "src": "docs/product-intro-video/solution.png",
         "fit": "contain",
         "position": { "x": "center", "y": "center" }
       },
@@ -127,7 +127,7 @@
         {
           "type": "image",
           "content": {
-            "src": "examples/product-intro-video/feature1.png",
+            "src": "docs/product-intro-video/feature1.png",
             "fit": "contain",
             "position": { "x": "center", "y": "center" }
           }
@@ -189,7 +189,7 @@
         {
           "type": "image",
           "content": {
-            "src": "examples/product-intro-video/feature2.png",
+            "src": "docs/product-intro-video/feature2.png",
             "fit": "contain",
             "position": { "x": "center", "y": "center" }
           }

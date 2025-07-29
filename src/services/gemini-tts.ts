@@ -4,6 +4,7 @@ import path from 'node:path';
 import { GoogleGenAI } from '@google/genai';
 
 import { Voice, NarrationTiming } from '@/types/index.js';
+import { ConfigManager } from '@/utils/config.js';
 import { KumikiError } from '@/utils/errors.js';
 import { logger } from '@/utils/logger.js';
 
@@ -28,10 +29,11 @@ export class GeminiTTSService {
   private genAI: GoogleGenAI | null = null;
   private initialized = false;
 
-  private initialize(): void {
+  private async initialize(): Promise<void> {
     if (this.initialized) return;
     
-    const apiKey = process.env.GEMINI_API_KEY;
+    // Try to get API key from config first, then environment variable
+    const apiKey = await ConfigManager.get('gemini.apiKey') || process.env.GEMINI_API_KEY;
     if (apiKey) {
       this.genAI = new GoogleGenAI({
         apiKey: apiKey,
@@ -41,10 +43,10 @@ export class GeminiTTSService {
   }
 
   async generateSpeech(params: GenerateSpeechParams): Promise<GenerateSpeechResult> {
-    this.initialize();
+    await this.initialize();
     
     if (!this.genAI) {
-      throw new GeminiTTSError('GEMINI_API_KEY environment variable is not set');
+      throw new GeminiTTSError('Gemini API key is not configured. Set it using: kumiki config set gemini.apiKey <YOUR_API_KEY> or set GEMINI_API_KEY environment variable');
     }
 
     const { text, voice, outputPath } = params;

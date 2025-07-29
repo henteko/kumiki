@@ -35,10 +35,6 @@ tmp/
 temp/
 *.tmp
 
-# Environment files
-.env
-.env.local
-.env.*.local
 
 # Output files (generated videos/images)
 output/

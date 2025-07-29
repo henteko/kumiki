@@ -20,6 +20,7 @@ Kumiki is a CLI tool that automatically generates videos from JSON-based configu
 - Node.js 18.0.0 or higher
 - FFmpeg (must be installed on your system)
 - Google Chrome (for preview functionality)
+- Google Gemini API key (for AI features)
 
 ## Installation
 
@@ -36,6 +37,20 @@ npm run build
 npm link
 
 kumiki --version
+```
+
+### Configuration
+
+Set up your Gemini API key (required for AI features):
+
+```bash
+kumiki config set gemini.apiKey YOUR_API_KEY
+```
+
+You can also set it via environment variable:
+
+```bash
+export GEMINI_API_KEY=YOUR_API_KEY
 ```
 
 ## Usage
@@ -92,7 +107,28 @@ kumiki show-schema [--include-examples]
 
 Display the JSON Schema for Kumiki projects. Useful for AI tool integration.
 
-#### 6. Cache Management
+#### 6. Configuration Management
+
+```bash
+# Set Gemini API key
+kumiki config set gemini.apiKey YOUR_API_KEY
+
+# Get a configuration value
+kumiki config get gemini.apiKey
+
+# Remove a configuration value
+kumiki config unset gemini.apiKey
+
+# List all configuration values
+kumiki config list
+
+# Show configuration file path
+kumiki config path
+```
+
+Manage global configuration settings. Configuration is stored in `~/.kumiki/config.json`.
+
+#### 7. Cache Management
 
 ```bash
 # Check cache status

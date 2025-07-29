@@ -1,5 +1,6 @@
 import { GoogleGenAI, Modality } from '@google/genai';
 
+import { ConfigManager } from '@/utils/config.js';
 import { KumikiError } from '@/utils/errors.js';
 import { logger } from '@/utils/logger.js';
 
@@ -20,10 +21,11 @@ export class GeminiImageService {
   private genAI: GoogleGenAI | null = null;
   private initialized = false;
 
-  private initialize(): void {
+  private async initialize(): Promise<void> {
     if (this.initialized) return;
     
-    const apiKey = process.env.GEMINI_API_KEY;
+    // Try to get API key from config first, then environment variable
+    const apiKey = await ConfigManager.get('gemini.apiKey') || process.env.GEMINI_API_KEY;
     if (apiKey) {
       this.genAI = new GoogleGenAI({
         apiKey: apiKey,
@@ -33,10 +35,10 @@ export class GeminiImageService {
   }
 
   async generateImage(params: GenerateImageParams): Promise<Buffer> {
-    this.initialize();
+    await this.initialize();
     
     if (!this.genAI) {
-      throw new GeminiError('GEMINI_API_KEY environment variable is not set');
+      throw new GeminiError('Gemini API key is not configured. Set it using: kumiki config set gemini.apiKey <YOUR_API_KEY> or set GEMINI_API_KEY environment variable');
     }
 
     logger.info('Generating image with Gemini', {
