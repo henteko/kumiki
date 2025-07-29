@@ -51,4 +51,5 @@ output/
 !examples/**/*.png
 !examples/**/*.jpg
 !examples/**/*.jpeg
+!examples/**/*.vtt
 .kumiki-cache/

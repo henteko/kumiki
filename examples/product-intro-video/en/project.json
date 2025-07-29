@@ -1,0 +1,348 @@
+{
+  "version": "1.0.0",
+  "name": "Kumiki Product Introduction",
+  "settings": {
+    "resolution": "1920x1080",
+    "fps": 30,
+    "narrationDefaults": {
+      "voice": {
+        "languageCode": "en-US",
+        "name": "Journey",
+        "speakingRate": 1.0,
+        "pitch": 0
+      },
+      "timing": {
+        "delay": 0.5,
+        "fadeIn": 0,
+        "fadeOut": 0.3
+      },
+      "volumeMix": {
+        "narration": 0.8,
+        "bgm": 0.3
+      }
+    }
+  },
+  "audio": {
+    "backgroundMusic": {
+      "src": "examples/product-intro-video/bgm.mp3",
+      "volume": 0.3,
+      "fadeIn": 2,
+      "fadeOut": 3
+    }
+  },
+  "scenes": [
+    {
+      "id": "opening",
+      "type": "text",
+      "duration": 3,
+      "content": {
+        "text": "Kumiki",
+        "style": {
+          "fontSize": 96,
+          "fontFamily": "Arial Black, sans-serif",
+          "fontWeight": "900",
+          "color": "#F97316",
+          "textAlign": "center"
+        },
+        "position": {
+          "x": "center",
+          "y": "center"
+        }
+      },
+      "background": {
+        "type": "gradient",
+        "value": "linear-gradient(135deg, #121212 0%, #2a2a2a 100%)"
+      }
+    },
+    {
+      "id": "problem",
+      "type": "composite",
+      "duration": 7,
+      "background": {
+        "type": "gradient",
+        "value": "linear-gradient(135deg, #121212 0%, #2a2a2a 100%)"
+      },
+      "layers": [
+        {
+          "type": "image",
+          "content": {
+            "src": {
+              "type": "generate",
+              "prompt": "Complex video editing software interface, numerous panels and toolbars, dark theme",
+              "style": "photorealistic",
+              "aspectRatio": "16:9"
+            },
+            "fit": "cover",
+            "position": {
+              "x": "center",
+              "y": "center"
+            }
+          },
+          "opacity": 0.3
+        },
+        {
+          "type": "text",
+          "content": {
+            "text": "Video creation is hard?",
+            "style": {
+              "fontSize": 64,
+              "fontFamily": "Arial, sans-serif",
+              "fontWeight": "bold",
+              "color": "#EAEAEA",
+              "textAlign": "center"
+            },
+            "position": {
+              "x": "center",
+              "y": "center"
+            }
+          }
+        }
+      ],
+      "narration": {
+        "text": "Video creation takes time and requires specialized skills... or does it?"
+      }
+    },
+    {
+      "id": "solution",
+      "type": "image",
+      "duration": 8,
+      "content": {
+        "src": "examples/product-intro-video/solution.png",
+        "fit": "contain",
+        "position": { "x": "center", "y": "center" }
+      },
+      "background": {
+        "type": "gradient",
+        "value": "linear-gradient(135deg, #121212 0%, #2a2a2a 100%)"
+      },
+      "narration": {
+        "text": "With Kumiki, you can automatically generate professional-quality videos using just JSON files"
+      }
+    },
+    {
+      "id": "feature1",
+      "type": "composite",
+      "duration": 12,
+      "layers": [
+        {
+          "type": "image",
+          "content": {
+            "src": "examples/product-intro-video/feature1.png",
+            "fit": "contain",
+            "position": { "x": "center", "y": "center" }
+          }
+        },
+        {
+          "type": "text",
+          "content": {
+            "text": "Simple Configuration",
+            "style": {
+              "fontSize": 64,
+              "fontFamily": "Courier New, monospace",
+              "color": "#EAEAEA",
+              "textAlign": "center",
+              "backgroundColor": "#1E1E1E",
+              "padding": 30,
+              "borderRadius": 8
+            },
+            "position": {
+              "x": "center",
+              "y": 300
+            }
+          }
+        }
+      ],
+      "background": {
+        "type": "gradient",
+        "value": "linear-gradient(135deg, #121212 0%, #2a2a2a 100%)"
+      },
+      "narration": {
+        "text": "Configuration is incredibly simple. Combine text, images, and videos to create your perfect composition"
+      }
+    },
+    {
+      "id": "feature2",
+      "type": "composite",
+      "duration": 12,
+      "background": {
+        "type": "gradient",
+        "value": "linear-gradient(135deg, #121212 0%, #2a2a2a 100%)"
+      },
+      "layers": [
+        {
+          "type": "text",
+          "content": {
+            "text": "AI-Powered",
+            "style": {
+              "fontSize": 48,
+              "fontFamily": "Arial, sans-serif",
+              "fontWeight": "bold",
+              "color": "#F97316",
+              "textAlign": "center"
+            },
+            "position": {
+              "x": "center",
+              "y": 100
+            }
+          }
+        },
+        {
+          "type": "image",
+          "content": {
+            "src": "examples/product-intro-video/feature2.png",
+            "fit": "contain",
+            "position": { "x": "center", "y": "center" }
+          }
+        }
+      ],
+      "narration": {
+        "text": "Plus, AI features are built-in. Generate images, music, and narration automatically. No assets? No problem"
+      }
+    },
+    {
+      "id": "feature3",
+      "type": "composite",
+      "duration": 12,
+      "background": {
+        "type": "gradient",
+        "value": "linear-gradient(135deg, #121212 0%, #2a2a2a 100%)"
+      },
+      "layers": [
+        {
+          "type": "text",
+          "content": {
+            "text": "Developer Friendly",
+            "style": {
+              "fontSize": 48,
+              "fontFamily": "Arial, sans-serif",
+              "fontWeight": "bold",
+              "color": "#F97316",
+              "textAlign": "center"
+            },
+            "position": {
+              "x": "center",
+              "y": 100
+            }
+          }
+        },
+        {
+          "type": "text",
+          "content": {
+            "text": "$ kumiki validate project.json\n✓ Validation passed\n\n$ kumiki generate project.json\n⚡ Generating video...\n✓ Video created: output.mp4",
+            "style": {
+              "fontSize": 26,
+              "fontFamily": "Courier New, monospace",
+              "color": "#A7F3D0",
+              "textAlign": "center",
+              "backgroundColor": "#0D1117",
+              "padding": 25,
+              "borderRadius": 8
+            },
+            "position": {
+              "x": "center",
+              "y": "center"
+            }
+          }
+        }
+      ],
+      "narration": {
+        "text": "A CLI tool designed for developers. Easy version control and seamless CI/CD integration"
+      }
+    },
+    {
+      "id": "use-cases",
+      "type": "text",
+      "duration": 10,
+      "content": {
+        "text": "For Every Purpose\n\n📱 Product Demos    📚 Educational Content    📢 Social Media",
+        "style": {
+          "fontSize": 42,
+          "fontFamily": "Arial, sans-serif",
+          "color": "#EAEAEA",
+          "textAlign": "center"
+        },
+        "position": {
+          "x": "center",
+          "y": "center"
+        }
+      },
+      "background": {
+        "type": "gradient",
+        "value": "linear-gradient(135deg, #121212 0%, #2a2a2a 100%)"
+      },
+      "narration": {
+        "text": "Perfect for product demos, educational content, social media videos, and more"
+      }
+    },
+    {
+      "id": "cta",
+      "type": "composite",
+      "duration": 8,
+      "background": {
+        "type": "gradient",
+        "value": "linear-gradient(135deg, #121212 0%, #2a2a2a 100%)"
+      },
+      "layers": [
+        {
+          "type": "text",
+          "content": {
+            "text": "Get Started Today",
+            "style": {
+              "fontSize": 56,
+              "fontFamily": "Arial, sans-serif",
+              "fontWeight": "bold",
+              "color": "#EAEAEA",
+              "textAlign": "center"
+            },
+            "position": {
+              "x": "center",
+              "y": 300
+            }
+          }
+        },
+        {
+          "type": "text",
+          "content": {
+            "text": "github.com/henteko/kumiki",
+            "style": {
+              "fontSize": 64,
+              "fontFamily": "Arial, sans-serif",
+              "color": "#F97316",
+              "textAlign": "center"
+            },
+            "position": {
+              "x": "center",
+              "y": 450
+            }
+          }
+        }
+      ],
+      "narration": {
+        "text": "Start using Kumiki today. Check out GitHub for more details"
+      }
+    },
+    {
+      "id": "ending",
+      "type": "text",
+      "duration": 3,
+      "content": {
+        "text": "Kumiki",
+        "style": {
+          "fontSize": 96,
+          "fontFamily": "Arial Black, sans-serif",
+          "fontWeight": "900",
+          "color": "#F97316",
+          "textAlign": "center"
+        },
+        "position": {
+          "x": "center",
+          "y": "center"
+        }
+      },
+      "background": {
+        "type": "gradient",
+        "value": "linear-gradient(135deg, #121212 0%, #2a2a2a 100%)"
+      }
+    }
+  ]
+}
