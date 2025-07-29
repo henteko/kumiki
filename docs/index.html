@@ -160,25 +160,13 @@ npm run build</code></pre>
                 <div class="step">
                     <div class="step-number">2</div>
                     <div class="step-content">
-                        <h3 class="step-title">Create a Project File</h3>
-                        <pre class="code-block"><code>{
-  <span class="key">"version"</span>: <span class="string">"1.0.0"</span>,
-  <span class="key">"name"</span>: <span class="string">"My First Video"</span>,
-  <span class="key">"settings"</span>: {
-    <span class="key">"resolution"</span>: <span class="string">"1920x1080"</span>,
-    <span class="key">"fps"</span>: <span class="number">30</span>
-  },
-  <span class="key">"scenes"</span>: [{
-    <span class="key">"type"</span>: <span class="string">"text"</span>,
-    <span class="key">"duration"</span>: <span class="number">5</span>,
-    <span class="key">"content"</span>: {
-      <span class="key">"text"</span>: <span class="string">"Welcome to Kumiki!"</span>
-    },
-    <span class="key">"narration"</span>: {
-      <span class="key">"text"</span>: <span class="string">"Kumikiへようこそ！"</span>
-    }
-  }]
-}</code></pre>
+                        <h3 class="step-title">Initialize and Configure</h3>
+                        <pre class="code-block"><code><span class="comment"># Initialize a new project (creates sample project.json)</span>
+kumiki init my-project.json
+
+<span class="comment"># Configure Gemini API key (required for AI features)</span>
+kumiki config set gemini.apiKey YOUR_API_KEY
+</code></pre>
                     </div>
                 </div>
                 <div class="step">
@@ -186,10 +174,10 @@ npm run build</code></pre>
                     <div class="step-content">
                         <h3 class="step-title">Generate Video</h3>
                         <pre class="code-block"><code><span class="comment"># Validate configuration</span>
-kumiki validate project.json
+kumiki validate my-project.json
 
 <span class="comment"># Generate video</span>
-kumiki generate project.json
+kumiki generate my-project.json
 </code></pre>
                     </div>
                 </div>
