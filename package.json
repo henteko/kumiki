@@ -1,6 +1,6 @@
 {
   "name": "@henteko/kumiki",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "A video generation tool that creates videos from JSON configurations",
   "type": "module",
   "main": "dist/index.js",

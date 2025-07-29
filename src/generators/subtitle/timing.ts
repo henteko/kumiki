@@ -80,7 +80,13 @@ export class SubtitleTiming {
         }
       }
 
+      // If we've reached the maximum number of lines and need to add the last line
       if (lines.length >= maxLines - 1 && currentLine) {
+        // Add all remaining words to the current line
+        const remainingWords = words.slice(words.indexOf(word) + 1);
+        if (remainingWords.length > 0) {
+          currentLine = [currentLine, ...remainingWords].join(' ');
+        }
         lines.push(currentLine);
         break;
       }
