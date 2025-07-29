@@ -9,6 +9,7 @@ import dotenv from 'dotenv';
 
 import { cacheCommand } from '@/commands/cache.js';
 import { generateCommand } from '@/commands/generate.js';
+import { initCommand } from '@/commands/init.js';
 import { previewCommand } from '@/commands/preview.js';
 import { showSchemaCommand } from '@/commands/show-schema.js';
 import { subtitleCommand } from '@/commands/subtitle.js';
@@ -29,6 +30,7 @@ program
   .description(packageJson.description)
   .version(packageJson.version);
 
+program.addCommand(initCommand);
 program.addCommand(validateCommand);
 program.addCommand(previewCommand);
 program.addCommand(generateCommand);

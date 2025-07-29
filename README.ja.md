@@ -1,126 +1,126 @@
 # Kumiki
 
-Kumiki is a CLI tool that automatically generates videos from JSON-based configuration files. You can create videos combining text, images, videos, and composite scenes using simple configuration files.
+KumikiはJSONベースの設定ファイルから動画を自動生成するCLIツールです。シンプルな構成ファイルを使用して、テキスト、画像、動画、複合シーンを組み合わせた動画を作成できます。
 
-## Features
+## 特徴
 
-- 📝 **JSON-based Configuration**: Define video composition in human-readable JSON format
-- 🎬 **Various Scene Types**: Support for text, image, video, and composite scenes
-- 🎵 **Audio Support**: BGM, narration, AI music generation
-- 🔄 **Scene Transitions**: Fade, wipe, dissolve effects
-- 🗣️ **AI Voice Synthesis**: Automatic narration generation via Google Gemini API
-- 🎼 **AI Music Generation**: Automatic BGM generation via Google Gemini API
-- 🖼️ **AI Image Generation**: Automatic image generation via Google Gemini API
-- 🔍 **Schema Validation**: Syntax checking and validation for configuration files
-- 💾 **Intelligent Caching**: Automatic caching and reuse of generated content
-- 📋 **AI-Assisted Development**: Output JSON Schema for integration with AI tools
+- 📝 **JSONベースの設定**: 人間が読みやすいJSON形式で動画の構成を定義
+- 🎬 **多様なシーンタイプ**: テキスト、画像、動画、複合シーンをサポート
+- 🎵 **音声サポート**: BGM、ナレーション、AI音楽生成
+- 🔄 **シーントランジション**: フェード、ワイプ、ディゾルブ効果
+- 🗣️ **AI音声合成**: Google Gemini APIによるナレーション自動生成
+- 🎼 **AI音楽生成**: Google Gemini APIによるBGM自動生成
+- 🖼️ **AI画像生成**: Google Gemini APIによる画像自動生成
+- 🔍 **スキーマ検証**: 設定ファイルの構文チェックと検証
+- 💾 **インテリジェントキャッシュ**: 生成コンテンツの自動キャッシュと再利用
+- 📋 **AI支援開発**: JSON Schemaを出力してAIツールと連携
 
-## Requirements
+## 必要条件
 
-- Node.js 18.0.0 or higher
-- FFmpeg (must be installed on your system)
-- Google Chrome (for preview functionality)
+- Node.js 18.0.0以上
+- FFmpeg（システムにインストール済みであること）
+- Google Chrome（プレビュー機能用）
 
-## Installation
+## インストール
 
 ```bash
-# Clone the repository
+# リポジトリをクローン
 git clone https://github.com/henteko/kumiki.git
 cd kumiki
 
-# Install dependencies
+# 依存関係をインストール
 npm install
 
-# Build and install globally
+# ビルドとグローバルインストール
 npm run build
 npm link
 
 kumiki --version
 ```
 
-## Usage
+## 使い方
 
-### Basic Commands
+### 基本的なコマンド
 
-#### 1. Initialize a New Project
+#### 1. 新規プロジェクトの初期化
 
 ```bash
 kumiki init [filename]
 ```
 
-Generate a sample configuration file.
+サンプルの設定ファイルを生成します。
 
-Options:
-- `-f, --force`: Overwrite existing file
-- Default filename is `project.json`
+オプション:
+- `-f, --force`: 既存ファイルを上書き
+- デフォルトのファイル名は `project.json`
 
-#### 2. Validate Project File
+#### 2. プロジェクトファイルの検証
 
 ```bash
 kumiki validate <project.json>
 ```
 
-Validate the syntax and content of your configuration file.
+設定ファイルの構文と内容を検証します。
 
-#### 3. Preview
+#### 3. プレビュー
 
 ```bash
 kumiki preview <project.json>
 ```
 
-Display a video preview in your browser (interactive).
+ブラウザで動画のプレビューを表示します（インタラクティブ）。
 
-#### 4. Generate Video
+#### 4. 動画生成
 
 ```bash
 kumiki generate <project.json> --output video.mp4
 ```
 
-Generate a video from the configuration file.
+設定ファイルから動画を生成します。
 
-Options:
-- `-o, --output <path>`: Output file path (default: output.mp4)
-- `-t, --temp-dir <path>`: Temporary files directory
-- `-c, --concurrency <number>`: Parallel processing count (default: 2)
-- `--keep-temp`: Keep temporary files
+オプション:
+- `-o, --output <path>`: 出力ファイルパス（デフォルト: output.mp4）
+- `-t, --temp-dir <path>`: 一時ファイルディレクトリ
+- `-c, --concurrency <number>`: 並列処理数（デフォルト: 2）
+- `--keep-temp`: 一時ファイルを保持
 
-#### 5. Show Schema
+#### 5. スキーマ表示
 
 ```bash
 kumiki show-schema [--include-examples]
 ```
 
-Display the JSON Schema for Kumiki projects. Useful for AI tool integration.
+KumikiプロジェクトのJSON Schemaを表示します。AIツールとの連携に便利です。
 
-#### 6. Cache Management
+#### 6. キャッシュ管理
 
 ```bash
-# Check cache status
+# キャッシュの状態を確認
 kumiki cache status
 
-# Show cache size
+# キャッシュサイズを表示
 kumiki cache size
 
-# Clear cache
+# キャッシュをクリア
 kumiki cache clear
 
-# Clear only cache older than 30 days
+# 30日以上前のキャッシュのみクリア
 kumiki cache clear --older-than 30d
 ```
 
-Manage cached generated images, music, and narrations.
+生成された画像、音楽、ナレーションのキャッシュを管理します。
 
-## Project File Structure
+## プロジェクトファイルの構造
 
-### Basic Example
+### 基本的な例
 
-To start a new project, use the `kumiki init` command to generate a sample file:
+新規プロジェクトを開始する場合は、`kumiki init` コマンドを使用してサンプルファイルを生成できます：
 
 ```bash
 kumiki init my-project.json
 ```
 
-Generated sample file:
+生成されるサンプルファイル：
 
 ```json
 {
@@ -193,9 +193,9 @@ Generated sample file:
 }
 ```
 
-### Scene Types
+### シーンタイプ
 
-#### Text Scene
+#### テキストシーン
 
 ```json
 {
@@ -219,7 +219,7 @@ Generated sample file:
 }
 ```
 
-#### Image Scene
+#### 画像シーン
 
 ```json
 {
@@ -237,7 +237,7 @@ Generated sample file:
 }
 ```
 
-#### Video Scene
+#### 動画シーン
 
 ```json
 {
@@ -254,7 +254,7 @@ Generated sample file:
 }
 ```
 
-#### Composite Scene
+#### 複合シーン
 
 ```json
 {
@@ -288,7 +288,7 @@ Generated sample file:
 }
 ```
 
-### Background Settings
+### 背景設定
 
 ```json
 {
@@ -313,7 +313,7 @@ Generated sample file:
 }
 ```
 
-### Transitions
+### トランジション
 
 ```json
 {
@@ -332,9 +332,9 @@ Generated sample file:
 }
 ```
 
-### Audio Settings
+### 音声設定
 
-#### BGM (from file)
+#### BGM（ファイルから）
 
 ```json
 {
@@ -349,7 +349,7 @@ Generated sample file:
 }
 ```
 
-#### BGM (AI-generated)
+#### BGM（AI生成）
 
 ```json
 {
@@ -357,7 +357,7 @@ Generated sample file:
     "backgroundMusic": {
       "src": {
         "type": "generate",
-        "prompt": "calm and bright piano and strings BGM",
+        "prompt": "穏やかで明るいピアノとストリングスのBGM",
         "duration": 30,
         "seed": 42
       },
@@ -369,17 +369,17 @@ Generated sample file:
 }
 ```
 
-### Narration
+### ナレーション
 
-You can add narration to each scene. Audio is automatically cached to avoid regeneration with the same text and settings.
+各シーンにナレーションを追加できます。音声は自動的にキャッシュされ、同じテキストと設定での再生成を避けます。
 
 ```json
 {
   "narration": {
-    "text": "This video introduces new features.",
+    "text": "この動画では新機能を紹介します。",
     "voice": {
-      "languageCode": "en-US",
-      "name": "Journey",
+      "languageCode": "ja-JP",
+      "name": "Kore",
       "speakingRate": 1.0,
       "pitch": 0,
       "volumeGainDb": 0
@@ -393,29 +393,29 @@ You can add narration to each scene. Audio is automatically cached to avoid rege
 }
 ```
 
-## AI-Assisted Development
+## AI支援開発
 
-### Integration with Claude Code or Gemini CLI
+### Claude CodeやGemini CLIとの連携
 
 ```bash
-# Get JSON Schema
+# JSON Schemaを取得
 kumiki show-schema --include-examples > schema.json
 
-# Pass to AI tools to generate video composition
-# Example: "Please create a 30-second product introduction video"
+# AIツールに渡して動画構成を生成
+# 例: "30秒の製品紹介動画を作成してください"
 ```
 
-### Schema Validation
+### スキーマ検証
 
 ```bash
-# Validation example using ajv
+# ajvを使用した検証例
 kumiki show-schema > schema.json
 ajv validate -s schema.json -d my-project.json
 ```
 
-## Advanced Usage
+## 高度な使い方
 
-### Project Settings
+### プロジェクト設定
 
 ```json
 {
@@ -426,8 +426,8 @@ ajv validate -s schema.json -d my-project.json
     "quality": "high",
     "narrationDefaults": {
       "voice": {
-        "languageCode": "en-US",
-        "name": "Journey",
+        "languageCode": "ja-JP",
+        "name": "Kore",
         "speakingRate": 1.0
       },
       "volumeMix": {
@@ -443,16 +443,16 @@ ajv validate -s schema.json -d my-project.json
 }
 ```
 
-### AI-Generated Content
+### AI生成コンテンツ
 
-#### Image Generation
+#### 画像生成
 
 ```json
 {
   "content": {
     "src": {
       "type": "generate",
-      "prompt": "Mount Fuji at sunset",
+      "prompt": "夕日に染まる富士山",
       "style": "photorealistic",
       "aspectRatio": "16:9"
     }
@@ -460,7 +460,7 @@ ajv validate -s schema.json -d my-project.json
 }
 ```
 
-#### Music Generation
+#### 音楽生成
 
 ```json
 {
@@ -468,7 +468,7 @@ ajv validate -s schema.json -d my-project.json
     "backgroundMusic": {
       "src": {
         "type": "generate",
-        "prompt": "energetic rock-style BGM",
+        "prompt": "エネルギッシュなロック調のBGM",
         "duration": 60,
         "config": {
           "genre": "rock",
@@ -481,59 +481,59 @@ ajv validate -s schema.json -d my-project.json
 }
 ```
 
-### Cache System
+### キャッシュシステム
 
-Kumiki automatically caches generated content (images, music, narration) to avoid regeneration with the same parameters.
+Kumikiは生成されたコンテンツ（画像、音楽、ナレーション）を自動的にキャッシュし、同じパラメータでの再生成を避けます。
 
-- **Image Cache**: Cache key generated from prompt, style, and aspect ratio
-- **Music Cache**: Cache key generated from prompt, duration, and config
-- **Narration Cache**: Cache key generated from text and voice settings
+- **画像キャッシュ**: プロンプト、スタイル、アスペクト比でキャッシュキーを生成
+- **音楽キャッシュ**: プロンプト、長さ、設定でキャッシュキーを生成
+- **ナレーションキャッシュ**: テキスト、音声設定でキャッシュキーを生成
 
-Cache is stored in the `.kumiki-cache/` directory.
+キャッシュは `.kumiki-cache/` ディレクトリに保存されます。
 
-## Development
+## 開発
 
-### Setup
+### セットアップ
 
 ```bash
-# Install dependencies
+# 依存関係のインストール
 npm install
 
-# Generate schemas
+# スキーマの生成
 npm run generate:schema
 
-# Run in development mode
+# 開発モードで実行
 npm run dev
 
-# Build
+# ビルド
 npm run build
 
 # Lint
 npm run lint
 
-# Type check
+# 型チェック
 npm run typecheck
 ```
 
-### Project Structure
+### プロジェクト構造
 
 ```
 kumiki/
 ├── src/
-│   ├── cli.ts              # CLI entry point
-│   ├── commands/           # CLI commands
-│   ├── core/              # Core functionality
-│   ├── scenes/            # Scene renderers
-│   ├── services/          # External service integrations
-│   ├── schemas/           # TypeSpec definitions
-│   └── utils/             # Utilities
-├── examples/              # Sample projects
-└── internal-docs/         # Internal documentation
+│   ├── cli.ts              # CLIエントリーポイント
+│   ├── commands/           # CLIコマンド
+│   ├── core/              # コア機能
+│   ├── scenes/            # シーンレンダラー
+│   ├── services/          # 外部サービス連携
+│   ├── schemas/           # TypeSpec定義
+│   └── utils/             # ユーティリティ
+├── examples/              # サンプルプロジェクト
+└── internal-docs/         # 内部ドキュメント
 ```
 
-## Troubleshooting
+## トラブルシューティング
 
-### FFmpeg Not Found
+### FFmpegが見つからない
 
 ```bash
 # macOS
@@ -543,31 +543,31 @@ brew install ffmpeg
 sudo apt-get install ffmpeg
 
 # Windows
-# Download from FFmpeg official site and add to PATH
+# FFmpeg公式サイトからダウンロードしてPATHに追加
 ```
 
-### Out of Memory Error
+### メモリ不足エラー
 
-For large video processing:
+大きな動画を処理する場合：
 
 ```bash
 NODE_OPTIONS="--max-old-space-size=8192" kumiki generate large-project.json
 ```
 
-### Cache Issues
+### キャッシュの問題
 
 ```bash
-# Clear cache
+# キャッシュをクリア
 kumiki cache clear
 
-# Check temporary files
+# 一時ファイルを確認
 kumiki generate project.json --keep-temp
 ```
 
-## License
+## ライセンス
 
 Apache License 2.0
 
-## Contributing
+## 貢献
 
-Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
+プルリクエストを歓迎します。大きな変更を行う場合は、まずissueを作成して変更内容について議論してください。
