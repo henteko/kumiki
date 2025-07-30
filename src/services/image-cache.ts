@@ -4,6 +4,7 @@ import path from 'node:path';
 
 import { GenerateImageParams } from './gemini.js';
 
+import { getGeneratedImageCacheDir } from '@/utils/app-dirs.js';
 import { logger } from '@/utils/logger.js';
 
 
@@ -33,9 +34,9 @@ export class ImageCache {
   private manifestPath: string;
   private manifest: CacheManifest | null = null;
 
-  constructor(cacheDir: string = '.kumiki-cache/generated-images') {
-    this.cacheDir = cacheDir;
-    this.manifestPath = path.join(cacheDir, 'manifest.json');
+  constructor(cacheDir?: string) {
+    this.cacheDir = cacheDir || getGeneratedImageCacheDir();
+    this.manifestPath = path.join(this.cacheDir, 'manifest.json');
   }
 
   async initialize(): Promise<void> {

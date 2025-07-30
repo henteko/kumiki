@@ -4,6 +4,7 @@ import { mkdir, readFile, writeFile, stat, unlink } from 'node:fs/promises';
 import path from 'node:path';
 
 import { FFmpegService } from '@/services/ffmpeg.js';
+import { getGeneratedMusicCacheDir } from '@/utils/app-dirs.js';
 import type { GenerateMusicParams } from '@/utils/generate-music-url-parser.js';
 import { logger } from '@/utils/logger.js';
 
@@ -38,7 +39,7 @@ export class MusicCache {
   private initialized = false;
 
   constructor() {
-    this.cacheDir = path.join(process.cwd(), '.kumiki-cache', 'generated-music');
+    this.cacheDir = getGeneratedMusicCacheDir();
     this.manifestPath = path.join(this.cacheDir, 'manifest.json');
   }
 

@@ -3,6 +3,7 @@ import { existsSync } from 'node:fs';
 import { mkdir, unlink, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 
+import { getTmpDir, ensureDir } from '@/utils/app-dirs.js';
 import { ProcessError } from '@/utils/errors.js';
 import { logger } from '@/utils/logger.js';
 
@@ -236,7 +237,9 @@ export class FFmpegService {
    */
   private async concatenateWithList(inputs: string[], output: string, onProgress?: (progress: number) => void): Promise<void> {
     // Create temporary concat list file
-    const concatListPath = path.join(path.dirname(output), 'concat-list.txt');
+    const tmpDir = getTmpDir();
+    ensureDir(tmpDir);
+    const concatListPath = path.join(tmpDir, `concat-list-${Date.now()}.txt`);
     const concatList = inputs.map(input => `file '${path.resolve(input)}'`).join('\n');
     await writeFile(concatListPath, concatList);
     

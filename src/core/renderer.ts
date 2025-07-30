@@ -12,6 +12,7 @@ import { musicCache, generateMusicCacheKey } from '@/services/music-cache.js';
 import { narrationService } from '@/services/narration.js';
 import { TransitionService } from '@/services/transition.js';
 import type { KumikiProject, ProcessNarrationResult, GenerateMusicSource } from '@/types/index.js';
+import { getTmpDir } from '@/utils/app-dirs.js';
 import { ProcessError } from '@/utils/errors.js';
 import { isGenerateMusicUrl, parseGenerateMusicUrl } from '@/utils/generate-music-url-parser.js';
 import { logger } from '@/utils/logger.js';
@@ -34,7 +35,7 @@ export class Renderer {
 
   constructor(private projectPath: string, options: RenderOptions) {
     this.options = options;
-    this.tempDir = options.tempDir || path.join(path.dirname(options.outputPath), '.kumiki-temp');
+    this.tempDir = options.tempDir || path.join(getTmpDir(), `kumiki-render-${Date.now()}`);
     this.ffmpeg = FFmpegService.getInstance();
   }
 

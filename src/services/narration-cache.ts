@@ -3,6 +3,7 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 
 import { Voice } from '@/types/index.js';
+import { getNarrationCacheDir } from '@/utils/app-dirs.js';
 import { logger } from '@/utils/logger.js';
 
 export interface CacheKey {
@@ -14,7 +15,7 @@ export class NarrationCacheService {
   private cacheDir: string;
 
   constructor(cacheDir?: string) {
-    this.cacheDir = cacheDir || path.join(process.cwd(), '.kumiki-cache', 'narration');
+    this.cacheDir = cacheDir || getNarrationCacheDir();
   }
 
   async ensureCacheDir(): Promise<void> {
