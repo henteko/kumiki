@@ -93,10 +93,13 @@ export const showSchemaCommand = new Command('show-schema')
         delete mainSchema.$defs.KumikiProject;
       }
       
+      // Add duration descriptions
+      const schemaWithDescriptions = addDurationDescriptions(mainSchema);
+      
       // Add examples if requested
-      let finalSchema = mainSchema;
+      let finalSchema = schemaWithDescriptions;
       if (options.includeExamples) {
-        finalSchema = addExamples(mainSchema);
+        finalSchema = addExamples(schemaWithDescriptions);
       }
       
       // Output JSON Schema to stdout
@@ -110,6 +113,44 @@ export const showSchemaCommand = new Command('show-schema')
       process.exit(1);
     }
   });
+
+/**
+ * Add description to duration fields
+ */
+function addDurationDescriptions<T>(schema: T): T {
+  if (typeof schema !== 'object' || schema === null) {
+    return schema;
+  }
+  
+  if (Array.isArray(schema)) {
+    return schema.map((item: unknown) => addDurationDescriptions(item)) as T;
+  }
+  
+  const result: Record<string, unknown> = {};
+  
+  for (const [key, value] of Object.entries(schema)) {
+    if (key === 'properties' && typeof value === 'object' && value !== null) {
+      // Process properties object
+      const props: Record<string, unknown> = {};
+      for (const [propKey, propValue] of Object.entries(value as Record<string, unknown>)) {
+        if (propKey === 'duration' && typeof propValue === 'object' && propValue !== null) {
+          // Add description to duration field
+          props[propKey] = {
+            ...propValue,
+            description: 'Duration in seconds'
+          };
+        } else {
+          props[propKey] = addDurationDescriptions(propValue);
+        }
+      }
+      result[key] = props;
+    } else {
+      result[key] = addDurationDescriptions(value);
+    }
+  }
+  
+  return result as T;
+}
 
 /**
  * Process $refs to convert file references to definition references
