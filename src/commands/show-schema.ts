@@ -1,5 +1,6 @@
 import { readFileSync, readdirSync } from 'node:fs';
 import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 
 import { Command } from 'commander';
 import * as yaml from 'js-yaml';
@@ -48,8 +49,12 @@ export const showSchemaCommand = new Command('show-schema')
   .option('--include-examples', 'include example values for each field')
   .action((options: ShowSchemaOptions) => {
     try {
-      // Path to generated JSON Schema files
-      const schemaDir = path.join(process.cwd(), 'src/schemas/generated/@typespec/json-schema');
+      // Get the directory of this file
+      const __filename = fileURLToPath(import.meta.url);
+      const __dirname = path.dirname(__filename);
+      
+      // Path to generated JSON Schema files - go up from commands to src, then into schemas
+      const schemaDir = path.join(__dirname, '..', '..', 'src', 'schemas', 'generated', '@typespec', 'json-schema');
       
       // Read all YAML schema files
       const schemaFiles = readdirSync(schemaDir).filter(file => file.endsWith('.yaml'));

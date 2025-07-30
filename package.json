@@ -1,6 +1,6 @@
 {
   "name": "@henteko/kumiki",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "A video generation tool that creates videos from JSON configurations",
   "type": "module",
   "main": "dist/index.js",
@@ -10,6 +10,7 @@
   },
   "files": [
     "dist/**/*",
+    "src/schemas/generated/@typespec/json-schema/*.yaml",
     "README.md",
     "LICENSE"
   ],
