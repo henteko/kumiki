@@ -22,7 +22,8 @@
       "Bash(npx eslint:*)",
       "Bash(npm run generate:schema:*)",
       "Bash(gh pr view:*)",
-      "Bash(gh api:*)"
+      "Bash(gh api:*)",
+      "Bash(gh run list:*)"
     ],
     "deny": []
   }
