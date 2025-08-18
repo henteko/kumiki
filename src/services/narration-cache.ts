@@ -93,27 +93,26 @@ export class NarrationCacheService {
   async clear(options?: { olderThan?: number }): Promise<number> {
     try {
       const files = await fs.readdir(this.cacheDir);
-      let clearedCount = 0;
-      
-      for (const file of files) {
-        if (file.endsWith('.wav')) {
-          const filePath = path.join(this.cacheDir, file);
-          
-          if (options?.olderThan) {
-            const stats = await fs.stat(filePath);
-            const age = Date.now() - stats.mtimeMs;
-            
-            if (age > options.olderThan) {
-              await fs.unlink(filePath);
-              clearedCount++;
-            }
-          } else {
-            await fs.unlink(filePath);
-            clearedCount++;
-          }
-        }
+      const wavFilePaths = files
+        .filter(file => file.endsWith('.wav'))
+        .map(file => path.join(this.cacheDir, file));
+
+      let filesToDelete = wavFilePaths;
+
+      if (options?.olderThan) {
+        const olderThanMs = options.olderThan;
+        const statPromises = wavFilePaths.map(async (filePath) => {
+          const stats = await fs.stat(filePath);
+          const age = Date.now() - stats.mtimeMs;
+          return age > olderThanMs ? filePath : null;
+        });
+        const results = await Promise.all(statPromises);
+        filesToDelete = results.filter((file): file is string => file !== null);
       }
-      
+
+      await Promise.all(filesToDelete.map(filePath => fs.unlink(filePath)));
+
+      const clearedCount = filesToDelete.length;
       logger.info(`Narration cache cleared: ${clearedCount} files`);
       return clearedCount;
     } catch (error) {
@@ -127,19 +126,16 @@ export class NarrationCacheService {
   async getStats(): Promise<{ totalFiles: number; totalSize: number }> {
     try {
       const files = await fs.readdir(this.cacheDir);
-      let totalSize = 0;
-      let totalFiles = 0;
+      const wavFiles = files.filter(file => file.endsWith('.wav'));
       
-      for (const file of files) {
-        if (file.endsWith('.wav')) {
-          const filePath = path.join(this.cacheDir, file);
-          const stats = await fs.stat(filePath);
-          totalSize += stats.size;
-          totalFiles++;
-        }
-      }
+      const statsPromises = wavFiles.map(file => 
+        fs.stat(path.join(this.cacheDir, file))
+      );
+      const statsArray = await Promise.all(statsPromises);
       
-      return { totalFiles, totalSize };
+      const totalSize = statsArray.reduce((sum, stats) => sum + stats.size, 0);
+      
+      return { totalFiles: wavFiles.length, totalSize };
     } catch (error) {
       if ((error as NodeJS.ErrnoException).code === 'ENOENT') {
         return { totalFiles: 0, totalSize: 0 };
@@ -154,25 +150,24 @@ export class NarrationCacheService {
     oldestEntry?: Date;
     newestEntry?: Date;
   }> {
-    const stats = await this.getStats();
-    
-    if (stats.totalFiles === 0) {
-      return {
-        totalFiles: 0,
-        totalSize: 0
-      };
-    }
+    try {
+      const files = await fs.readdir(this.cacheDir);
+      const wavFiles = files.filter(file => file.endsWith('.wav'));
 
-    const files = await fs.readdir(this.cacheDir);
-    let oldestTime: number | null = null;
-    let newestTime: number | null = null;
+      if (wavFiles.length === 0) {
+        return { totalFiles: 0, totalSize: 0 };
+      }
 
-    for (const file of files) {
-      if (file.endsWith('.wav')) {
-        const filePath = path.join(this.cacheDir, file);
-        const fileStat = await fs.stat(filePath);
-        const time = fileStat.mtimeMs;
-        
+      const statsPromises = wavFiles.map(file => fs.stat(path.join(this.cacheDir, file)));
+      const statsArray = await Promise.all(statsPromises);
+
+      let totalSize = 0;
+      let oldestTime: number | null = null;
+      let newestTime: number | null = null;
+
+      for (const stats of statsArray) {
+        totalSize += stats.size;
+        const time = stats.mtimeMs;
         if (oldestTime === null || time < oldestTime) {
           oldestTime = time;
         }
@@ -180,14 +175,19 @@ export class NarrationCacheService {
           newestTime = time;
         }
       }
-    }
 
-    return {
-      totalFiles: stats.totalFiles,
-      totalSize: stats.totalSize,
-      oldestEntry: oldestTime ? new Date(oldestTime) : undefined,
-      newestEntry: newestTime ? new Date(newestTime) : undefined
-    };
+      return {
+        totalFiles: wavFiles.length,
+        totalSize,
+        oldestEntry: oldestTime ? new Date(oldestTime) : undefined,
+        newestEntry: newestTime ? new Date(newestTime) : undefined,
+      };
+    } catch (error) {
+      if ((error as NodeJS.ErrnoException).code === 'ENOENT') {
+        return { totalFiles: 0, totalSize: 0 };
+      }
+      throw error;
+    }
   }
 }
 
