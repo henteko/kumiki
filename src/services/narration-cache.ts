@@ -13,9 +13,16 @@ export interface CacheKey {
 
 export class NarrationCacheService {
   private cacheDir: string;
+  private initialized = false;
 
   constructor(cacheDir?: string) {
     this.cacheDir = cacheDir || getNarrationCacheDir();
+  }
+
+  async initialize(): Promise<void> {
+    if (this.initialized) return;
+    await this.ensureCacheDir();
+    this.initialized = true;
   }
 
   async ensureCacheDir(): Promise<void> {
@@ -83,43 +90,101 @@ export class NarrationCacheService {
     return cachePath;
   }
 
-  async clear(): Promise<void> {
+  async clear(options?: { olderThan?: number }): Promise<number> {
     try {
       const files = await fs.readdir(this.cacheDir);
-      
-      await Promise.all(
-        files
-          .filter(file => file.endsWith('.wav'))
-          .map(file => fs.unlink(path.join(this.cacheDir, file)))
-      );
-      
-      logger.info('Narration cache cleared');
+      const wavFilePaths = files
+        .filter(file => file.endsWith('.wav'))
+        .map(file => path.join(this.cacheDir, file));
+
+      let filesToDelete = wavFilePaths;
+
+      if (options?.olderThan) {
+        const olderThanMs = options.olderThan;
+        const statPromises = wavFilePaths.map(async (filePath) => {
+          const stats = await fs.stat(filePath);
+          const age = Date.now() - stats.mtimeMs;
+          return age > olderThanMs ? filePath : null;
+        });
+        const results = await Promise.all(statPromises);
+        filesToDelete = results.filter((file): file is string => file !== null);
+      }
+
+      await Promise.all(filesToDelete.map(filePath => fs.unlink(filePath)));
+
+      const clearedCount = filesToDelete.length;
+      logger.info(`Narration cache cleared: ${clearedCount} files`);
+      return clearedCount;
     } catch (error) {
       if ((error as NodeJS.ErrnoException).code !== 'ENOENT') {
         throw error;
       }
+      return 0;
     }
   }
 
-  async getCacheStats(): Promise<{ count: number; size: number }> {
+  async getStats(): Promise<{ totalFiles: number; totalSize: number }> {
     try {
       const files = await fs.readdir(this.cacheDir);
-      let totalSize = 0;
-      let count = 0;
+      const wavFiles = files.filter(file => file.endsWith('.wav'));
       
-      for (const file of files) {
-        if (file.endsWith('.wav')) {
-          const filePath = path.join(this.cacheDir, file);
-          const stats = await fs.stat(filePath);
-          totalSize += stats.size;
-          count++;
-        }
-      }
+      const statsPromises = wavFiles.map(file => 
+        fs.stat(path.join(this.cacheDir, file))
+      );
+      const statsArray = await Promise.all(statsPromises);
       
-      return { count, size: totalSize };
+      const totalSize = statsArray.reduce((sum, stats) => sum + stats.size, 0);
+      
+      return { totalFiles: wavFiles.length, totalSize };
     } catch (error) {
       if ((error as NodeJS.ErrnoException).code === 'ENOENT') {
-        return { count: 0, size: 0 };
+        return { totalFiles: 0, totalSize: 0 };
+      }
+      throw error;
+    }
+  }
+
+  async getStatus(): Promise<{
+    totalFiles: number;
+    totalSize: number;
+    oldestEntry?: Date;
+    newestEntry?: Date;
+  }> {
+    try {
+      const files = await fs.readdir(this.cacheDir);
+      const wavFiles = files.filter(file => file.endsWith('.wav'));
+
+      if (wavFiles.length === 0) {
+        return { totalFiles: 0, totalSize: 0 };
+      }
+
+      const statsPromises = wavFiles.map(file => fs.stat(path.join(this.cacheDir, file)));
+      const statsArray = await Promise.all(statsPromises);
+
+      let totalSize = 0;
+      let oldestTime: number | null = null;
+      let newestTime: number | null = null;
+
+      for (const stats of statsArray) {
+        totalSize += stats.size;
+        const time = stats.mtimeMs;
+        if (oldestTime === null || time < oldestTime) {
+          oldestTime = time;
+        }
+        if (newestTime === null || time > newestTime) {
+          newestTime = time;
+        }
+      }
+
+      return {
+        totalFiles: wavFiles.length,
+        totalSize,
+        oldestEntry: oldestTime ? new Date(oldestTime) : undefined,
+        newestEntry: newestTime ? new Date(newestTime) : undefined,
+      };
+    } catch (error) {
+      if ((error as NodeJS.ErrnoException).code === 'ENOENT') {
+        return { totalFiles: 0, totalSize: 0 };
       }
       throw error;
     }
