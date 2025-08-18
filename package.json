@@ -1,6 +1,6 @@
 {
   "name": "@henteko/kumiki",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "description": "A video generation tool that creates videos from JSON configurations",
   "type": "module",
   "main": "dist/index.js",
@@ -23,7 +23,8 @@
     "typecheck": "npm run generate:schema && tsc --noEmit",
     "generate:schema": "tsp compile src/schemas/kumiki.tsp && npm run fix:generated-schema",
     "fix:generated-schema": "node scripts/fix-generated-schema.js",
-    "prepublishOnly": "npm run clean && npm run build"
+    "prepublishOnly": "npm run clean && npm run build",
+    "release": "npm publish --access public"
   },
   "keywords": [
     "video",
