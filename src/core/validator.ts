@@ -13,7 +13,7 @@ export function validateProject(data: unknown): ValidationResult {
   logger.debug('Project data:', { data });
 
   try {
-    const project = projectSchema.parse(data) as KumikiProject;
+    const project = projectSchema.parse(data);
     
     // Additional validations
     const additionalErrors = validateAdditionalRules(project);
