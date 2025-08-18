@@ -18,11 +18,11 @@
     "dev": "npm run generate:schema && tsx src/cli.ts",
     "build": "npm run generate:schema && tsc && tsc-alias",
     "clean": "rimraf dist",
-    "lint": "eslint src --ext .ts",
-    "lint:fix": "eslint src --ext .ts --fix",
+    "lint": "npm run generate:schema && eslint src --ext .ts",
+    "lint:fix": "npm run generate:schema && eslint src --ext .ts --fix",
     "typecheck": "npm run generate:schema && tsc --noEmit",
     "generate:schema": "tsp compile src/schemas/kumiki.tsp && npm run fix:generated-schema",
-    "fix:generated-schema": "sed -i '' 's/default(0n)/default(0)/g' src/schemas/generated/typespec-zod/models.ts",
+    "fix:generated-schema": "node scripts/fix-generated-schema.js",
     "prepublishOnly": "npm run clean && npm run build"
   },
   "keywords": [
